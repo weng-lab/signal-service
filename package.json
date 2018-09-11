@@ -4,8 +4,10 @@
   "description": "Service that handles retrieving signal and peak data from BigWig and BigBed files",
   "scripts": {
     "build": "tsc",
+    "start": "node dist/server.js",
     "test": "jest",
-    "start": "node dist/server.js"
+    "debug": "node --inspect dist/server.js",
+    "prettier": "prettier --write './src/**/*.ts'"
   },
   "dependencies": {
     "apollo-server-express": "^2.0.6",
@@ -18,11 +20,18 @@
     "@types/jest": "^23.3.1",
     "@types/supertest": "^2.0.6",
     "jest": "^23.5.0",
+    "prettier": "1.14.2",
     "supertest": "^3.3.0",
     "ts-jest": "^23.1.4",
     "ts-node": "^7.0.1",
     "typescript": "^3.0.1"
   },
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "prettier": {
+    "printWidth": 160,
+    "tabWidth": 4,
+    "arrowParens": "always",
+    "parser": "typescript"
+  }
 }

@@ -1,4 +1,4 @@
-import { bigWigSchema } from './bigwigSchema'
+import { bigWigSchema } from "./bigwigSchema";
 
 export const schema = bigWigSchema;
 

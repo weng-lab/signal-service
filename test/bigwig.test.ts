@@ -1,7 +1,6 @@
 import request from "supertest";
 import { Response } from "supertest";
 import app from "../src/app";
-import { gql } from "apollo-server-core";
 
 const baseUrl = "http://localhost:8001/";
 const testBWUrl = `${baseUrl}testbw.bigwig`;
@@ -123,4 +122,4 @@ describe("bigRequests queries", () => {
         expect(response.body.data.bigRequests[1].data.length).toBe(46);
     });
 
-})
+});

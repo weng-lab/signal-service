@@ -1,9 +1,9 @@
-import { AxiosDataLoader, BigWigReader, HeaderData, FileType, ZoomLevelHeader } from 'bigwig-reader';
-import { BigResponse, BigResponseData, BigRequest } from '../models/bigwigModel';
+import { AxiosDataLoader, BigWigReader, HeaderData, FileType, ZoomLevelHeader } from "bigwig-reader";
+import { BigResponse, BigResponseData, BigRequest } from "../models/bigwigModel";
 
 /**
  * Apollo server graphql resolver for batched bigwig / bigbed data requests.
- * 
+ *
  * @param obj Unused. Needed by Apollo server resolver function signature.
  */
 async function bigRequests(obj: any, { requests }: { requests: Array<BigRequest> } | any): Promise<BigResponse[]> {
@@ -15,11 +15,17 @@ async function bigRequests(obj: any, { requests }: { requests: Array<BigRequest>
         const zoomLevelIndex = getClosestZoomLevelIndex(request.zoomLevel, header.zoomLevelHeaders);
         let read: () => Promise<BigResponseData>;
         if (undefined != zoomLevelIndex) {
-            read = () => { return reader.readZoomData(request.chr1, request.start, request.chr2 || request.chr1, request.end, zoomLevelIndex) };
+            read = () => {
+                return reader.readZoomData(request.chr1, request.start, request.chr2 || request.chr1, request.end, zoomLevelIndex);
+            };
         } else if (FileType.BigWig === header.fileType) {
-            read = () => { return reader.readBigWigData(request.chr1, request.start, request.chr2 || request.chr1, request.end) };
+            read = () => {
+                return reader.readBigWigData(request.chr1, request.start, request.chr2 || request.chr1, request.end);
+            };
         } else {
-            read = () => { return reader.readBigBedData(request.chr1, request.start, request.chr2 || request.chr1, request.end) };
+            read = () => {
+                return reader.readBigBedData(request.chr1, request.start, request.chr2 || request.chr1, request.end);
+            };
         }
         readPromises.push(readRequest(read));
     }
@@ -30,16 +36,16 @@ async function bigRequests(obj: any, { requests }: { requests: Array<BigRequest>
 /**
  * Get a zoomLevelIndex for the request.zoomLevel
  * Finds the index for the closest zoomLevelHeader by reductionLevel without going over.
- * 
+ *
  * @param zoomLevel zoomLevel from the request.
  * @param zoomLevelHeaders ZommLevelHeaders from BigWigReader's BigWigHeader.zoomLevelHeaders.
  */
-function getClosestZoomLevelIndex(zoomLevel: number|undefined, zoomLevelHeaders?: ZoomLevelHeader[]): number|undefined {
+function getClosestZoomLevelIndex(zoomLevel: number | undefined, zoomLevelHeaders?: ZoomLevelHeader[]): number | undefined {
     if (undefined == zoomLevel || undefined == zoomLevelHeaders) {
         return undefined;
     }
-    let zoomLevelIndex: number|undefined;
-    let highestReduction: number|undefined;
+    let zoomLevelIndex: number | undefined;
+    let highestReduction: number | undefined;
     for (let zoomLevelHeader of zoomLevelHeaders) {
         if (zoomLevelHeader.reductionLevel > zoomLevel) {
             continue;
@@ -54,7 +60,7 @@ function getClosestZoomLevelIndex(zoomLevel: number|undefined, zoomLevelHeaders?
 
 /**
  * Wraps the given read with error handling and creates a response object.
- * 
+ *
  * @param read Function that attempts to read data.
  */
 async function readRequest(read: () => Promise<BigResponseData>): Promise<BigResponse> {
@@ -69,7 +75,7 @@ async function readRequest(read: () => Promise<BigResponseData>): Promise<BigRes
 
 /**
  * Resolve type for BigResponseData union type for the given data object.
- * 
+ *
  * @param obj The object that contains the result returned from the resolver on the parent field
  */
 function resolveBigResponseType(obj: any): string {

@@ -8,11 +8,11 @@ export interface BigRequest {
 }
 
 export interface BigResponse {
-    data?: BigResponseData,
-    error?: string
+    data?: BigResponseData;
+    error?: string;
 }
 
-export type BigResponseData = BigWigData[] | BigBedData[] | BigZoomData[]
+export type BigResponseData = BigWigData[] | BigBedData[] | BigZoomData[];
 
 export interface BigWigData {
     chr: string;
@@ -35,14 +35,14 @@ export interface BigBedData {
 }
 
 export interface BigZoomData {
-    chr: string,
-    start: number,
-    end: number,
-    validCount: number,
-    minVal: number,
-    maxVal: number,
-    sumData: number,
-    sumSquares: number
+    chr: string;
+    start: number;
+    end: number;
+    validCount: number;
+    minVal: number;
+    maxVal: number;
+    sumData: number;
+    sumSquares: number;
 }
 
 export interface BigBedExon {

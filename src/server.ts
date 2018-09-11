@@ -1,4 +1,4 @@
-import app from './app'
+import app from "./app";
 
 // start listening on the port
 const port = app.get("port");
