@@ -55,7 +55,6 @@ function getClosestZoomLevelIndex(zoomLevel: number|undefined, zoomLevelHeaders?
 /**
  * Wraps the given read with error handling and creates a response object.
  * 
- * @param request The graphql request that triggered this.
  * @param read Function that attempts to read data.
  */
 async function readRequest(read: () => Promise<BigResponseData>): Promise<BigResponse> {
