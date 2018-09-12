@@ -29,8 +29,7 @@ async function bigRequests(obj: any, { requests }: { requests: Array<BigRequest>
         }
         readPromises.push(readRequest(read));
     }
-    const result: BigResponse[] = await Promise.all(readPromises);
-    return result;
+    return Promise.all(readPromises);
 }
 
 /**
