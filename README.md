@@ -53,4 +53,5 @@ You must have Node.js and docker-compose installed.
 
 ### Deploying
 * `scripts/push-image.sh SOME_VERSION` to push docker image tagged with SOME_VERSION to Google Container Registry.
-* `scripts/deploy.sh SOME_VERSION staging` to deploy the docker image hosted in GCR to kubernetes in staging environment.
+* `scripts/deploy.sh staging SOME_VERSION` to deploy the docker image tagged with SOME_VERSION in GCR to kubernetes in staging environment. 
+A list of options will be provided if the second argument is left blank.
