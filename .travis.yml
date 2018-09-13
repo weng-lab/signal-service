@@ -2,13 +2,19 @@ dist: trusty
 sudo: required
 language: node_js
 node_js: 10.9
+
+cache:
+  directories:
+  # We cache the SDK so we don't have to download it again on subsequent builds.
+  - $HOME/google-cloud-sdk
+
 services:
   - docker
 script:
   - scripts/test.sh
   - scripts/build.sh
 
-before_deploy:
+before_script:
   - if [ ! -d "$HOME/google-cloud-sdk/bin" ]; then rm -rf $HOME/google-cloud-sdk; export CLOUDSDK_CORE_DISABLE_PROMPTS=1; curl https://sdk.cloud.google.com | bash; fi
   - source /home/travis/google-cloud-sdk/path.bash.inc
   - gcloud --quiet version
