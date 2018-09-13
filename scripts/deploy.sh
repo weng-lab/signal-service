@@ -47,6 +47,7 @@ fi
 
 gcloud --quiet config set project $K8S_PROJECT_ID
 gcloud --quiet config set container/cluster $K8S_CLUSTER_NAME
+gcloud --quiet config set compute/zone $COMPUTE_ZONE
 gcloud --quiet container clusters get-credentials $K8S_CLUSTER_NAME
 
 # Deploy the configured service / Apply any changes to the configuration.
