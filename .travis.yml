@@ -23,10 +23,12 @@ before_deploy:
 
 deploy:
   - provider: script
-    script: 
-      - scripts/push-image.sh $TRAVIS_TAG
-      - scripts/deploy.sh $TRAVIS_TAG staging
+    script: scripts/push-image.sh $TRAVIS_TAG
     skip_cleanup: true
     on:
-      branch: master
+      tags: true
+  - provider: script
+    script: scripts/deploy.sh $TRAVIS_TAG staging
+    skip_cleanup: true
+    on:
       tags: true
