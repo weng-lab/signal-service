@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Deploys to kubernetes. Takes 2 args:
 # arg1: docker image tag to deploy.
 # arg2: environment, ie staging. This should match up with filename prefixes for lib/${arg1}.env.sh and k8s/${arg1}.yml

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Pushes the docker image created in build.sh to GCR. Takes 1 arg:
 # arg1: docker image tag to push.
 # Example usage: scripts/push-image.sh v1.0.0
