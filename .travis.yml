@@ -27,6 +27,6 @@ deploy:
     on:
       tags: true
   - provider: script
-    script: scripts/deploy.sh $TRAVIS_TAG staging
+    script: scripts/deploy.sh staging $TRAVIS_TAG
     on:
       tags: true
