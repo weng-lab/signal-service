@@ -12,7 +12,7 @@ services:
   - docker
 script:
   - scripts/test.sh
-  - scripts/build.sh
+  - scripts/build.sh $TRAVIS_TAG
 
 before_deploy:
   - if [ ! -d "$HOME/google-cloud-sdk/bin" ]; then rm -rf $HOME/google-cloud-sdk; export CLOUDSDK_CORE_DISABLE_PROMPTS=1; curl https://sdk.cloud.google.com | bash >/dev/null; fi
@@ -24,11 +24,9 @@ before_deploy:
 deploy:
   - provider: script
     script: scripts/push-image.sh $TRAVIS_TAG
-    skip_cleanup: true
     on:
       tags: true
   - provider: script
     script: scripts/deploy.sh $TRAVIS_TAG staging
-    skip_cleanup: true
     on:
       tags: true
