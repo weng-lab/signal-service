@@ -2,6 +2,8 @@ node_modules/
 dist/
 test/
 resources/
+scripts/
+k8s/
 .git
 Dockerfile
 docker-compose.yml

@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: signal-service-deployment
+  labels:
+    app: signal-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: signal-service
+  template:
+    metadata:
+      labels:
+        app: signal-service
+    spec:
+      containers:
+      - name: signal-service
+        image: gcr.io/devenv-215523/signal-service
+        ports:
+        - containerPort: 3000
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: signal-service-service
+  labels:
+    app: signal-service
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 3000
+  selector:
+    app: signal-service
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: api-ingress
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: "staging-api-external-ip"
+spec:
+  backend:
+    serviceName: signal-service-service
+    servicePort: 80

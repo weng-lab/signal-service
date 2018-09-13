@@ -1,22 +1,17 @@
 #!/bin/sh
 # Builds docker container and tags it. Takes 1 arg:
-# arg1: docker image tag.
+# arg1: docker image tag (Optional)
 # Example usage: scripts/push-image.sh v1.0.0
 set -e
 
 # cd to project root directory
 cd "$(dirname "$(dirname "$0")")"
 
-# Exit if one arg not given
-if [[ $# -ne 1 ]]; then
-    echo "One argument required.";
-    exit;
-fi
+# Set docker tag to first arg or latest if arg not given.
+[[ ! -z "$1" ]] && DOCKER_TAG="$1" || DOCKER_TAG=latest
 
 # import common stuff
 source scripts/lib/common.sh
 
-echo ${GCR_PROJECT_ID}
-
 # build the image and tag it with the project version
-docker build -t gcr.io/${GCR_PROJECT_ID}/${DOCKER_IMAGE_NAME}:${1} .
+docker build -t gcr.io/${GCR_PROJECT_ID}/${DOCKER_IMAGE_NAME}:${DOCKER_TAG} .

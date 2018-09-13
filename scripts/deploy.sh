@@ -18,7 +18,7 @@ if [[ $# -ne 2 ]]; then
 fi
 
 # Run the environment shell script to set environment specific variables
-scripts/lib/${1}.env.sh
+source scripts/lib/${2}.env.sh
 
 # When running in ci, we will set environment variables with base64 encoded versions of service key files.
 # This will log you in with the given account.
@@ -28,8 +28,9 @@ if [[ "${K8S_SERVICE_KEY}" ]]; then
     gcloud auth activate-service-account --key-file ${HOME}/k8s_service_key.json
 fi
 
-gcloud --quiet config set project $K8S_PROJECT_NAME
-gcloud --quiet config set cluster $K8S_CLUSTER_NAME
+gcloud --quiet config set project $K8S_PROJECT_ID
+gcloud --quiet config set container/cluster $K8S_CLUSTER_NAME
+gcloud --quiet container clusters get-credentials $K8S_CLUSTER_NAME
 
 # Deploy the configured service / Apply any changes to the configuration.
 kubectl apply -f k8s/${2}.yml

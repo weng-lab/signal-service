@@ -41,10 +41,16 @@ Variables will look like this:
 
 ### Building
 * Run `yarn install` to install dependencies.
-* Run `yarn build` to build.
+* Run `yarn build` to compile typescript
+* `scripts/build.sh SOME_VERSION` to build docker image and tag it with SOME_VERSION.
 
 ### Testing
 You must have Node.js and docker-compose installed. 
-* `scripts/test.sh` to run automated tests.
+* `scripts/test.sh` to spin up dependences and run automated tests.
+* `yarn test` to run tests without spinning up dependencies.
 * `scripts/run-dependencies.sh` to stand up a web server to host static sample BigWig and BigBed files. `scripts/test.sh` runs this for you.
 * `scripts/stop-dependencies.sh` to stop bring down the server.
+
+### Deploying
+* `scripts/push-image.sh SOME_VERSION` to push docker image tagged with SOME_VERSION to Google Container Registry.
+* `scripts/deploy.sh SOME_VERSION staging` to deploy the docker image hosted in GCR to kubernetes in staging environment.

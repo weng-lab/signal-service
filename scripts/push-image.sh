@@ -21,6 +21,7 @@ source scripts/lib/common.sh
 # This will log you in with the given account.
 # When running locally log in manually with your own account.
 if [[ "${GCR_SERVICE_KEY}" ]]; then
+    echo "HERE2"${GCR_SERVICE_KEY}
     echo $GCR_SERVICE_KEY | base64 --decode > ${HOME}/gcr_service_key.json
     gcloud auth activate-service-account --key-file ${HOME}/gcr_service_key.json
     docker login -u _json_key --password-stdin https://gcr.io < ${HOME}/gcr_service_key.json
