@@ -1,5 +1,6 @@
 import { AxiosDataLoader, BigWigReader, HeaderData, FileType, ZoomLevelHeader } from "bigwig-reader";
 import { BigResponse, BigResponseData, BigRequest } from "../models/bigwigModel";
+import Axios from "axios";
 
 /**
  * Apollo server graphql resolver for batched bigwig / bigbed data requests.
@@ -7,29 +8,34 @@ import { BigResponse, BigResponseData, BigRequest } from "../models/bigwigModel"
  * @param obj Unused. Needed by Apollo server resolver function signature.
  */
 async function bigRequests(obj: any, { requests }: { requests: Array<BigRequest> } | any): Promise<BigResponse[]> {
-    const readPromises: Promise<BigResponse>[] = [];
-    for (let request of requests) {
-        const loader = new AxiosDataLoader(request.url);
-        const reader = new BigWigReader(loader);
-        const header: HeaderData = await reader.getHeader();
-        const zoomLevelIndex = getClosestZoomLevelIndex(request.zoomLevel, header.zoomLevelHeaders);
-        let read: () => Promise<BigResponseData>;
-        if (undefined != zoomLevelIndex) {
-            read = () => {
-                return reader.readZoomData(request.chr1, request.start, request.chr2 || request.chr1, request.end, zoomLevelIndex);
-            };
-        } else if (FileType.BigWig === header.fileType) {
-            read = () => {
-                return reader.readBigWigData(request.chr1, request.start, request.chr2 || request.chr1, request.end);
-            };
-        } else {
-            read = () => {
-                return reader.readBigBedData(request.chr1, request.start, request.chr2 || request.chr1, request.end);
-            };
-        }
-        readPromises.push(readRequest(read));
+    return Promise.all(requests.map((request: BigRequest) => bigRequest(request)));
+}
+
+/**
+ * Creates a Promise for processing a single BigRequest.
+ * 
+ * @param request the BigRequest to handle.
+ */
+async function bigRequest(request: BigRequest): Promise<BigResponse> {
+    const loader = new AxiosDataLoader(request.url);
+    const reader = new BigWigReader(loader);
+    const header: HeaderData = await reader.getHeader();
+    const zoomLevelIndex = getClosestZoomLevelIndex(request.zoomLevel, header.zoomLevelHeaders);
+    let read: () => Promise<BigResponseData>;
+    if (undefined != zoomLevelIndex) {
+        read = () => {
+            return reader.readZoomData(request.chr1, request.start, request.chr2 || request.chr1, request.end, zoomLevelIndex);
+        };
+    } else if (FileType.BigWig === header.fileType) {
+        read = () => {
+            return reader.readBigWigData(request.chr1, request.start, request.chr2 || request.chr1, request.end);
+        };
+    } else {
+        read = () => {
+            return reader.readBigBedData(request.chr1, request.start, request.chr2 || request.chr1, request.end);
+        };
     }
-    return Promise.all(readPromises);
+    return readRequest(read);
 }
 
 /**
