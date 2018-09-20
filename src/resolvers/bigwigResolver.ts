@@ -1,6 +1,5 @@
 import { AxiosDataLoader, BigWigReader, HeaderData, FileType, ZoomLevelHeader } from "bigwig-reader";
 import { BigResponse, BigResponseData, BigRequest } from "../models/bigwigModel";
-import Axios from "axios";
 
 /**
  * Apollo server graphql resolver for batched bigwig / bigbed data requests.
@@ -84,7 +83,7 @@ async function readRequest(read: () => Promise<BigResponseData>): Promise<BigRes
  * @param obj The object that contains the result returned from the resolver on the parent field
  */
 function resolveBigResponseType(obj: any): string {
-    if (obj.value) {
+    if (undefined != obj.value) {
         return "BigWigData";
     } else if (obj.validCount) {
         return "BigZoomData";
