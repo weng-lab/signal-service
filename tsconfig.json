@@ -10,7 +10,8 @@
         "sourceMap": true,
         "outDir": "dist",
         "strict": true,
-        "strictNullChecks": true
+        "strictNullChecks": true,
+        "noImplicitAny": true
     },
     "include": [
         "src/**/*"
