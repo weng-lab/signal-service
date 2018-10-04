@@ -1,7 +1,6 @@
 import { AxiosDataLoader, BigWigReader, HeaderData, FileType, ZoomLevelHeader } from "bigwig-reader";
 import { BigResponse, BigResponseData, BigRequest } from "../models/bigwigModel";
-import { Genomes, TrackHubGenomes, trackHubUrl, trackHubResponse, TrackHub } from "../models/trackHubModel";
-import Axios from "axios";
+
 /**
  * Apollo server graphql resolver for batched bigwig / bigbed data requests.
  *
@@ -13,7 +12,7 @@ async function bigRequests(obj: any, { requests }: { requests: Array<BigRequest>
 
 /**
  * Creates a Promise for processing a single BigRequest.
- *
+ * 
  * @param request the BigRequest to handle.
  */
 async function bigRequest(request: BigRequest): Promise<BigResponse> {
