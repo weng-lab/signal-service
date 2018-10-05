@@ -18,8 +18,8 @@ async function trackHubRequests(obj: any, trackHubUrl: trackHubUrl | any): Promi
     let shortLabel: string;
     //hubUrl : Fetch hub Genomes when true otherwise fetch hub content of respective genome
     if (trackHubUrl.trackhuburl.hubUrl) {
-        let result: any;
-        result.data = await Axios.get(trackHubUrl.trackhuburl.trackHubUrl);
+        
+        const result = await Axios.get(trackHubUrl.trackhuburl.trackHubUrl);
         const lines = result.data.split("\n");
         //ShortLabel
         const shortLabelLine = lines.find((l: string) => l.startsWith("shortLabel"))!;
@@ -36,8 +36,7 @@ async function trackHubRequests(obj: any, trackHubUrl: trackHubUrl | any): Promi
             const i = trackHubUrl.trackhuburl.trackHubUrl.lastIndexOf("/");
             url = trackHubUrl.trackhuburl.trackHubUrl.substr(0, i) + "/" + genomeFile; // genome url
         }
-        let hubGenomes: any;
-        hubGenomes.data = await Axios.get(url);
+        let hubGenomes= await Axios.get(url);
         const gen: Genomes[] = [];
         let trackHubGenome: TrackHubGenomes = {} as {
             trackhubname?: string;
@@ -78,9 +77,8 @@ async function trackHubRequests(obj: any, trackHubUrl: trackHubUrl | any): Promi
         trackHubGenome.genomes = gen;
         trackHubGenome.trackhubname = shortLabel;
         return trackHubGenome;
-    } else {
-        let hubResponse: any;
-        hubResponse.data = await Axios.get(trackHubUrl.trackhuburl.trackHubUrl);
+    } else {        
+        let hubResponse = await Axios.get(trackHubUrl.trackhuburl.trackHubUrl);
         let trackHubContent: TrackHub = {} as {
             trackHubContent: string;
         };
