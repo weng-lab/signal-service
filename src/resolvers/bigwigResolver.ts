@@ -12,7 +12,7 @@ async function bigRequests(obj: any, { requests }: { requests: Array<BigRequest>
 
 /**
  * Creates a Promise for processing a single BigRequest.
- * 
+ *
  * @param request the BigRequest to handle.
  */
 async function bigRequest(request: BigRequest): Promise<BigResponse> {
