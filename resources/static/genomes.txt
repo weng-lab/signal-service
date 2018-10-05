@@ -1,0 +1,3 @@
+genome mm10
+trackDb mm10/trackDb.txt
+defaultPos chr2:163423234-163655010
