@@ -59,10 +59,14 @@ describe("bigRequests queries", () => {
         expect(response.status).toBe(200);
         expect(response.body.data.bigRequests[0].data.length).toBe(5074);
     });
-
+    
     test("should handle zoom data requests", async () => {
         const variables = {
-            "bigRequests": [{ url: testBWUrl, chr1: "chr2", start: 0, chr2: "chr6", end: 1000, zoomLevel: 100 }]
+            "bigRequests": [
+		{ url: testBWUrl, chr1: "chr2", start: 0, chr2: "chr6", end: 1000, zoomLevel: 100 },
+		{ url: testBWUrl, chr1: "chr2", start: 29_432_633, end: 30_432_633, zoomLevel: 1000 },
+		{ url: testBWUrl, chr1: "chr2", start: 29_432_633, end: 30_432_633, zoomLevel: 10_000 }
+	    ],
         };
         const response: Response = await request(app).post("/graphql").send({ query, variables });
         expect(response.status).toBe(200);
@@ -87,6 +91,20 @@ describe("bigRequests queries", () => {
             minVal: 2,
             maxVal: 759
         });
+	expect(response.body.data.bigRequests[1].data.length).toBe(1000);
+	expect(response.body.data.bigRequests[1].data[0]).toEqual({
+	    start: 29_432_633,
+	    end: 29_433_632,
+	    minVal: 1,
+	    maxVal: 1298
+	});
+	expect(response.body.data.bigRequests[2].data.length).toBe(100);
+	expect(response.body.data.bigRequests[2].data[1]).toEqual({
+	    start: 29_442_633,
+	    end: 29_452_632,
+	    minVal: 1,
+	    maxVal: 1699
+	});
     });
 
     test("should handle one bigbed request", async () => {

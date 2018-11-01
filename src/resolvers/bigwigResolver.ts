@@ -12,6 +12,49 @@ async function bigRequests(obj: any, { requests }: { requests: Array<BigRequest>
 }
 
 /**
+ * Creates a proimse for condensing zoomed bigWig data to return exactly one element per pixel.
+ *
+ * @param data the zoom data returned by the bigWig reader
+ * @param request the request, containing coordinates and number of basepairs per pixel
+ */
+async function condensedZoomData(pdata: Promise<BigResponseData>, request: BigRequest): Promise<BigResponseData> {
+
+    let data: BigResponseData = await pdata;
+    let bin = coord => Math.floor((coord - request.start) / request.zoomLevel);
+    let dataout: BigResponseData = [];
+
+    /* create one empty result datapoint per pixel */
+    for (let i = request.start; i < request.end; i += request.zoomLevel) {
+	dataout.push({
+	    chr: request.chr,
+	    start: i,
+	    end: i + request.zoomLevel - 1,
+	    minVal: Infinity,
+	    maxVal: -Infinity
+	});
+    }
+
+    /* step through datapoints; add values to appropriate pixels */
+    for (let datapoint of data) {
+	for (let i = datapoint.start; i < datapoint.end; ++i) {
+	    const ibin = bin(i);
+	    if (!dataout[ibin]) { continue; } // some datapoints will be out of range
+	    if (dataout[ibin].minVal > datapoint.minVal) { dataout[ibin].minVal = datapoint.minVal; }
+	    if (dataout[ibin].maxVal < datapoint.maxVal) { dataout[ibin].maxVal = datapoint.maxVal; }
+	}
+    }
+
+    /* replace infinities with zero */
+    for (let datapoint of dataout) {
+	if (datapoint.minVal === Infinity) { datapoint.minVal = 0.0; }
+	if (datapoint.maxVal === -Infinity) { datapoint.maxVal = 0.0; }
+    }
+
+    return dataout;
+
+}
+
+/**
  * Creates a Promise for processing a single BigRequest.
  *
  * @param request the BigRequest to handle.
@@ -24,7 +67,10 @@ async function bigRequest(request: BigRequest): Promise<BigResponse> {
     let read: () => Promise<BigResponseData>;
     if (undefined != zoomLevelIndex) {
         read = () => {
-            return reader.readZoomData(request.chr1, request.start, request.chr2 || request.chr1, request.end, zoomLevelIndex);
+	    if (request.chr2 && request.chr2 !== request.chr1) { // can't condense across chromosomes
+		return reader.readZoomData(request.chr1, request.start, request.chr2 || request.chr1, request.end, zoomLevelIndex);
+	    }
+            return condensedZoomData(reader.readZoomData(request.chr1, request.start, request.chr1, request.end, zoomLevelIndex), request);
         };
     } else if (FileType.BigWig === header.fileType) {
         read = () => {
