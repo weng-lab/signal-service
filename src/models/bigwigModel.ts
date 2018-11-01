@@ -5,7 +5,7 @@ export interface BigRequest {
     chr2?: string;
     end: number;
     zoomLevel?: number;
-    onePerPixel?: bool;
+    onePerPixel?: boolean;
 }
 
 export interface BigResponse {
@@ -39,11 +39,11 @@ export interface BigZoomData {
     chr: string;
     start: number;
     end: number;
-    validCount: number;
+    validCount?: number;
     minVal: number;
     maxVal: number;
-    sumData: number;
-    sumSquares: number;
+    sumData?: number;
+    sumSquares?: number;
 }
 
 export interface BigBedExon {

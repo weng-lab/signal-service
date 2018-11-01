@@ -104,6 +104,7 @@ describe("bigRequests queries", () => {
 	});
 	expect(response.body.data.bigRequests[2].data.length).toBe(2);
 	expect(response.body.data.bigRequests[2].data[1]).toEqual({
+	    chr: "chr2",
 	    start: 29_442_633,
 	    end: 29_452_632,
 	    minVal: 1,

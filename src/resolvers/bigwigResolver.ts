@@ -1,6 +1,6 @@
 import { GraphQLScalarType } from "graphql";
 import { AxiosDataLoader, BigWigReader, HeaderData, FileType, ZoomLevelHeader } from "bigwig-reader";
-import { BigResponse, BigResponseData, BigRequest } from "../models/bigwigModel";
+import { BigResponse, BigResponseData, BigRequest, BigZoomData } from "../models/bigwigModel";
 
 /**
  * Apollo server graphql resolver for batched bigwig / bigbed data requests.
@@ -17,18 +17,18 @@ async function bigRequests(obj: any, { requests }: { requests: Array<BigRequest>
  * @param data the zoom data returned by the bigWig reader
  * @param request the request, containing coordinates and number of basepairs per pixel
  */
-async function condensedZoomData(pdata: Promise<BigResponseData>, request: BigRequest): Promise<BigResponseData> {
+async function condensedZoomData(pdata: Promise<BigZoomData[]>, request: BigRequest): Promise<BigZoomData[]> {
 
-    let data: BigResponseData = await pdata;
-    let bin = coord => Math.floor((coord - request.start) / request.zoomLevel);
-    let dataout: BigResponseData = [];
+    let data: BigZoomData[] = await pdata;
+    let bin: (coord: number) => number = (coord) => (Math.floor((coord - request.start) / request.zoomLevel!));
+    let dataout: BigZoomData[] = [];
 
     /* create one empty result datapoint per pixel */
-    for (let i = request.start; i < request.end; i += request.zoomLevel) {
+    for (let i = request.start; i < request.end; i += request.zoomLevel!) {
 	dataout.push({
-	    chr: request.chr,
+	    chr: request.chr1,
 	    start: i,
-	    end: i + request.zoomLevel - 1,
+	    end: i + request.zoomLevel! - 1,
 	    minVal: Infinity,
 	    maxVal: -Infinity
 	});
