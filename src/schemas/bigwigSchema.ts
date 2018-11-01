@@ -19,6 +19,8 @@ export const typeDefs = gql`
         end: Int!
         "(Optional) Base pairs per item. Picks the highest available in the file without going over."
         zoomLevel: Int
+        "(Optional) Return one datapoint per pixel. Only used if zoomLevel is passed; otherwise ignored."
+        onePerPixel: Boolean
     }
 
     type BigResponse {

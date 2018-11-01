@@ -65,7 +65,7 @@ describe("bigRequests queries", () => {
             "bigRequests": [
 		{ url: testBWUrl, chr1: "chr2", start: 0, chr2: "chr6", end: 1000, zoomLevel: 100 },
 		{ url: testBWUrl, chr1: "chr2", start: 29_432_633, end: 30_432_633, zoomLevel: 1000 },
-		{ url: testBWUrl, chr1: "chr2", start: 29_432_633, end: 30_432_633, zoomLevel: 10_000 }
+		{ url: testBWUrl, chr1: "chr2", start: 29_432_633, end: 30_432_633, zoomLevel: 10_000, onePerPixel: true }
 	    ],
         };
         const response: Response = await request(app).post("/graphql").send({ query, variables });
@@ -91,14 +91,18 @@ describe("bigRequests queries", () => {
             minVal: 2,
             maxVal: 759
         });
-	expect(response.body.data.bigRequests[1].data.length).toBe(1000);
+	expect(response.body.data.bigRequests[1].data.length).toBe(3);
 	expect(response.body.data.bigRequests[1].data[0]).toEqual({
-	    start: 29_432_633,
-	    end: 29_433_632,
+	    chr: "chr2",
+	    end: 29_432_793,
+	    maxVal: 1298,
 	    minVal: 1,
-	    maxVal: 1298
+	    start: 29_432_593,
+	    sumData: 154_443,
+	    sumSquares: 145_046_320,
+	    validCount: 188
 	});
-	expect(response.body.data.bigRequests[2].data.length).toBe(100);
+	expect(response.body.data.bigRequests[2].data.length).toBe(2);
 	expect(response.body.data.bigRequests[2].data[1]).toEqual({
 	    start: 29_442_633,
 	    end: 29_452_632,

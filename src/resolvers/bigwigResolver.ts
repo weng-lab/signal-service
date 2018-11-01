@@ -44,13 +44,8 @@ async function condensedZoomData(pdata: Promise<BigResponseData>, request: BigRe
 	}
     }
 
-    /* replace infinities with zero */
-    for (let datapoint of dataout) {
-	if (datapoint.minVal === Infinity) { datapoint.minVal = 0.0; }
-	if (datapoint.maxVal === -Infinity) { datapoint.maxVal = 0.0; }
-    }
-
-    return dataout;
+    /* filter any without data; if minVal was set, maxVal must have been set */
+    return dataout.filter(datapoint => datapoint.minVal !== Infinity);
 
 }
 
@@ -69,7 +64,7 @@ async function bigRequest(request: BigRequest): Promise<BigResponse> {
         read = () => {
 
 	    /* can't condense across chromosomes; bigBed will require separate algorithm */
-	    if (FileType.BigWig !== header.fileType || (request.chr2 && request.chr2 !== request.chr1)) {
+	    if (!request.onePerPixel || FileType.BigWig !== header.fileType || (request.chr2 && request.chr2 !== request.chr1)) {
 		return reader.readZoomData(request.chr1, request.start, request.chr2 || request.chr1, request.end, zoomLevelIndex);
 	    }
 	    

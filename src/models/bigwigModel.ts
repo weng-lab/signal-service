@@ -5,6 +5,7 @@ export interface BigRequest {
     chr2?: string;
     end: number;
     zoomLevel?: number;
+    onePerPixel?: bool;
 }
 
 export interface BigResponse {
