@@ -67,10 +67,14 @@ async function bigRequest(request: BigRequest): Promise<BigResponse> {
     let read: () => Promise<BigResponseData>;
     if (undefined != zoomLevelIndex) {
         read = () => {
-	    if (request.chr2 && request.chr2 !== request.chr1) { // can't condense across chromosomes
+
+	    /* can't condense across chromosomes; bigBed will require separate algorithm */
+	    if (FileType.BigWig !== header.fileType || (request.chr2 && request.chr2 !== request.chr1)) {
 		return reader.readZoomData(request.chr1, request.start, request.chr2 || request.chr1, request.end, zoomLevelIndex);
 	    }
+	    
             return condensedZoomData(reader.readZoomData(request.chr1, request.start, request.chr1, request.end, zoomLevelIndex), request);
+	    
         };
     } else if (FileType.BigWig === header.fileType) {
         read = () => {
