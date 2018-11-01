@@ -7,21 +7,7 @@ The following is a complete example graphql query for batching big file requests
 ```graphql
 query BigRequests($bigRequests: [BigRequest!]!) {
     bigRequests(requests: $bigRequests) {
-        data {
-            chr, start, end
-            ... on BigWigData {
-                value
-            }
-            ... on BigZoomData {
-                validCount, sumData, sumSquares, minVal, maxVal
-            }
-            ... on BigBedData {
-                name, score, strand, cdStart, cdEnd, color
-                exons { 
-                    start, end 
-                }
-            }
-        }
+        data,
         error
     }
 }

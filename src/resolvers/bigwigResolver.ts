@@ -1,3 +1,4 @@
+import { GraphQLScalarType } from "graphql";
 import { AxiosDataLoader, BigWigReader, HeaderData, FileType, ZoomLevelHeader } from "bigwig-reader";
 import { BigResponse, BigResponseData, BigRequest } from "../models/bigwigModel";
 
@@ -77,26 +78,15 @@ async function readRequest(read: () => Promise<BigResponseData>): Promise<BigRes
     return response;
 }
 
-/**
- * Resolve type for BigResponseData union type for the given data object.
- *
- * @param obj The object that contains the result returned from the resolver on the parent field
- */
-function resolveBigResponseType(obj: any): string {
-    if (undefined != obj.value) {
-        return "BigWigData";
-    } else if (obj.validCount) {
-        return "BigZoomData";
-    } else {
-        return "BigBedData";
-    }
-}
-
 export const bigwigResolvers = {
     Query: {
         bigRequests
     },
-    BigResponseData: {
-        __resolveType: resolveBigResponseType
-    }
+    BigResponseData: new GraphQLScalarType({
+	name: "BigResponseData",
+	description: "Generic BigResponse object; may contain BigBed, BigWig, or BigZoom data",
+	serialize: value => value,
+	parseValue: value => value,
+	parseLiteral: value => value
+    }) // assume that the object is in the correct format and simply pass on
 };
