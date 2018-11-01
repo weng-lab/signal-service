@@ -10,3 +10,7 @@ Thumbs.db
 
 # Ignore built ts files
 dist
+
+# large bigWig for testing
+# downloaded by run-dependencies if it does not exist
+resources/static/ENCFF686NUN.bigWig

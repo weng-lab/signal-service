@@ -26,47 +26,8 @@ export const typeDefs = gql`
         error: String
     }
 
-    interface BigResponseData {
-        chr: String!
-        start: Int!
-        end: Int!
-    }
+    scalar BigResponseData
 
-    type BigWigData implements BigResponseData {
-        chr: String!
-        start: Int!
-        end: Int!
-        value: Float!
-    }
-
-    type BigBedData implements BigResponseData {
-        chr: String!
-        start: Int!
-        end: Int!
-        name: String
-        score: Float
-        strand: String
-        cdStart: Int
-        cdEnd: Int
-        color: String
-        exons: [BigBedExon!]
-    }
-
-    type BigBedExon {
-        start: Int!
-        end: Int!
-    }
-
-    type BigZoomData implements BigResponseData {
-        chr: String!
-        start: Int!
-        end: Int!
-        validCount: Int!
-        minVal: Float!
-        maxVal: Float!
-        sumData: Float!
-        sumSquares: Float!
-    }
 `;
 
 export const bigWigSchema = makeExecutableSchema({

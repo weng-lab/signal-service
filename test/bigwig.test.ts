@@ -5,25 +5,12 @@ import app from "../src/app";
 const baseUrl = "http://localhost:8001/";
 const testBWUrl = `${baseUrl}testbw.bigwig`;
 const testBBUrl = `${baseUrl}testbb.bigbed`;
+const testLargeBWUrl = `${baseUrl}ENCFF686NUN.bigWig`;
 
 const query = `
     query BigRequests($bigRequests: [BigRequest!]!) {
         bigRequests(requests: $bigRequests) {
-            data {
-                chr, start, end
-                ... on BigWigData {
-                    value
-                }
-                ... on BigZoomData {
-                    validCount, sumData, sumSquares, minVal, maxVal
-                }
-                ... on BigBedData {
-                    name, score, strand, cdStart, cdEnd, color
-                    exons { 
-                        start, end 
-                    }
-                }
-            }
+            data,
             error
         }
     }
@@ -50,6 +37,16 @@ describe("bigRequests queries", () => {
             end: 19_486_030, 
             value: 1959
         });
+    });
+
+    test("should handle one very large bigwig request", async () => {
+        const variables = {
+            "bigRequests": [{ url: testLargeBWUrl, chr1: "chr14", start: 19_485_000, end: 20_000_100 }]
+        };
+        const response: Response = await request(app).post("/graphql").send({ query, variables });
+        expect(response.status).toBe(200);
+        expect(response.body.data.bigRequests[0].data.length).toBe(25_756);
+        expect(response.body.data.bigRequests[0].error).toBeNull();
     });
 
     test("should handle one large bigwig request", async () => {
