@@ -39,7 +39,9 @@ describe("bigRequests queries", () => {
         });
     });
 
-    test("should handle one very large bigwig request", async () => {
+    // skipped by default due to outside dependency on bigWig download from ENCODE
+    // remove '.skip' to run if ../resources/static/ENCFF686NUN.bigWig exists
+    test.skip("should handle one very large bigwig request", async () => {
         const variables = {
             "bigRequests": [{ url: testLargeBWUrl, chr1: "chr14", start: 19_485_000, end: 20_000_100 }]
         };
