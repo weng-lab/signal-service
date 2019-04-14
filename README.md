@@ -17,7 +17,8 @@ Variables will look like this:
 {
     "bigRequests": [
         { "url": "http://localhost/sample.bigwig", "chr1": "chr14", "start": 19485000, "end": 20000100 },
-        { "url": "http://localhost/sample.bigwig", "chr1": "chr2", "start": 0, "chr2": "chr6", "end": 1000, "zoomLevel": 100 }
+        { "url": "http://localhost/sample.bigwig", "chr1": "chr2", "start": 0, "chr2": "chr6", "end": 1000, "zoomLevel": 100 },
+        { "url": "http://localhost/sample.bigwig", "chr1": "chr2", "start": 0, "end": 1000000, "zoomLevel": 1000, "onePerPixel": true },
         { "url": "http://localhost/sample.bigbed", "chr1": "chr21", "start": 10000000, "chr2": "chr21", "end": 20000000 }
     ]
 };

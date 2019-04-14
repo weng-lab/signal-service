@@ -1,6 +1,6 @@
 import { gql, makeExecutableSchema } from "apollo-server-express";
 import { trackHubResolvers } from "../resolvers/trackhubResolver";
-export const trackHubtypeDefs = gql`
+export const trackHubtypeDefs: any = gql`
     type Query {
         trackHubRequests(trackhuburl: trackHubUrl!): trackHubResponse!
     }
@@ -26,7 +26,7 @@ export const trackHubtypeDefs = gql`
     }
 `;
 
-export const trackHubSchema = makeExecutableSchema({
+export const trackHubSchema: any = makeExecutableSchema({
     typeDefs: trackHubtypeDefs,
     resolvers: trackHubResolvers
 });

@@ -1,6 +1,6 @@
 import { GraphQLScalarType } from "graphql";
 import { AxiosDataLoader, BigWigReader, HeaderData, FileType, ZoomLevelHeader } from "bigwig-reader";
-import { BigResponse, BigResponseData, BigRequest } from "../models/bigwigModel";
+import { BigResponse, BigResponseData, BigRequest, BigZoomData, PreRenderedBigWigData, BigWigData } from "../models/bigwigModel";
 
 /**
  * Apollo server graphql resolver for batched bigwig / bigbed data requests.
@@ -9,6 +9,88 @@ import { BigResponse, BigResponseData, BigRequest } from "../models/bigwigModel"
  */
 async function bigRequests(obj: any, { requests }: { requests: Array<BigRequest> } | any): Promise<BigResponse[]> {
     return Promise.all(requests.map((request: BigRequest) => bigRequest(request)));
+}
+
+function getDomain(values: { start: number, end: number }[]): { start: number, end: number } {
+    let domain: { start: number, end: number } = { start: Infinity, end: -Infinity };
+    values.forEach( (value: { start: number, end: number }): void => {
+	if (value.start < domain.start) domain.start = value.start;
+	if (value.end > domain.end) domain.end = value.end;
+    });
+    return domain;
+}
+
+function initialPreRenderedValues(xdomain: { start: number, end: number }): PreRenderedBigWigData[] {
+    let retval: PreRenderedBigWigData[] = [];
+    for (let i: number = xdomain.start; i <= xdomain.end; ++i) {
+	retval.push({
+	    x: i,
+	    max: -Infinity,
+	    min: Infinity
+	});
+    }
+    return retval;
+}
+
+/**
+ * Creates a proimse for condensing zoomed bigWig data to return exactly one element per pixel.
+ *
+ * @param data the zoom data returned by the bigWig reader
+ * @param request the request, containing coordinates and number of basepairs per pixel
+ */
+async function condensedData(data: BigWigData[], preRenderedWidth: number): Promise<PreRenderedBigWigData[]> {
+
+    let domain: { start: number, end: number } = getDomain(data);
+    let x: (i: number) => number = i => (i - domain.start) * preRenderedWidth / (domain.end - domain.start);
+    
+    let cbounds: { start: number, end: number } = { start: Math.floor(x(data[0].start)), end: Math.floor(x(data[data.length - 1].end)) };
+    let retval = initialPreRenderedValues(cbounds);
+
+    
+    data.forEach( (point: BigWigData): void => {
+	let cxs: number = Math.floor(x(point.start));
+	let cxe: number = Math.floor(x(point.end));
+	if (point.value < retval[cxs].min)
+	    retval[cxs].min = point.value;
+	if (point.value > retval[cxs].max)
+	    retval[cxs].max = point.value;
+        for (let i: number = cxs + 1; i <= cxe; ++i) {
+	    retval[i].min = point.value;
+	    retval[i].max = point.value;
+	}
+    });
+    return retval;
+
+}
+
+/**
+ * Creates a proimse for condensing zoomed bigWig data to return exactly one element per pixel.
+ *
+ * @param data the zoom data returned by the bigWig reader
+ * @param request the request, containing coordinates and number of basepairs per pixel
+ */
+async function condensedZoomData(data: BigZoomData[], preRenderedWidth: number): Promise<PreRenderedBigWigData[]> {
+
+    let domain: { start: number, end: number } = getDomain(data);
+    let x: (i: number) => number = i => (i - domain.start) * preRenderedWidth / (domain.end - domain.start);
+    
+    let cbounds: { start: number, end: number } = { start: Math.floor(x(data[0].start)), end: Math.floor(x(data[data.length - 1].end)) };
+    let retval = initialPreRenderedValues(cbounds);
+
+    data.forEach( (point: BigZoomData): void => {
+	let cxs: number = Math.floor(x(point.start));
+	let cxe: number = Math.floor(x(point.end));
+	if (point.minVal < retval[cxs].min)
+	    retval[cxs].min = point.minVal;
+	if (point.maxVal > retval[cxs].max)
+	    retval[cxs].max = point.maxVal;
+        for (let i: number = cxs + 1; i <= cxe; ++i) {
+	    retval[i].min = point.minVal;
+	    retval[i].max = point.maxVal;
+	}
+    });
+    return retval;
+
 }
 
 /**
@@ -23,12 +105,21 @@ async function bigRequest(request: BigRequest): Promise<BigResponse> {
     const zoomLevelIndex = getClosestZoomLevelIndex(request.zoomLevel, header.zoomLevelHeaders);
     let read: () => Promise<BigResponseData>;
     if (undefined != zoomLevelIndex) {
-        read = () => {
-            return reader.readZoomData(request.chr1, request.start, request.chr2 || request.chr1, request.end, zoomLevelIndex);
+        read = async () => {
+
+	    /* can't condense across chromosomes; bigBed will require separate algorithm */
+	    if (!request.preRenderedWidth || FileType.BigWig !== header.fileType || (request.chr2 && request.chr2 !== request.chr1)) {
+		return reader.readZoomData(request.chr1, request.start, request.chr2 || request.chr1, request.end, zoomLevelIndex);
+	    }
+	    
+            return condensedZoomData(await reader.readZoomData(request.chr1, request.start, request.chr1, request.end, zoomLevelIndex), request.preRenderedWidth!);
+	    
         };
     } else if (FileType.BigWig === header.fileType) {
-        read = () => {
-            return reader.readBigWigData(request.chr1, request.start, request.chr2 || request.chr1, request.end);
+        read = async () => {
+            let data = reader.readBigWigData(request.chr1, request.start, request.chr2 || request.chr1, request.end);
+	    if (!request.preRenderedWidth) return data;
+	    return condensedData(await data, request.preRenderedWidth!);
         };
     } else {
         read = () => {

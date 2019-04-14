@@ -1,7 +1,7 @@
 import { gql, makeExecutableSchema } from "apollo-server-express";
 import { bigwigResolvers } from "../resolvers/bigwigResolver";
 
-export const typeDefs = gql`
+export const typeDefs: any = gql`
     type Query {
         bigRequests(requests: [BigRequest!]!): [BigResponse!]!
     }
@@ -19,6 +19,8 @@ export const typeDefs = gql`
         end: Int!
         "(Optional) Base pairs per item. Picks the highest available in the file without going over."
         zoomLevel: Int
+        "(Optional) If passed, pre-renders BigWig data to match the given number of bins to save download and rendering time on the frontend."
+        preRenderedWidth: Int
     }
 
     type BigResponse {
@@ -30,7 +32,7 @@ export const typeDefs = gql`
 
 `;
 
-export const bigWigSchema = makeExecutableSchema({
+export const bigWigSchema: any = makeExecutableSchema({
     typeDefs,
     resolvers: bigwigResolvers
 });
