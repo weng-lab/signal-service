@@ -5,7 +5,7 @@ export interface BigRequest {
     chr2?: string;
     end: number;
     zoomLevel?: number;
-    onePerPixel?: boolean;
+    preRenderedWidth?: number;
 }
 
 export interface BigResponse {
@@ -13,7 +13,7 @@ export interface BigResponse {
     error?: string;
 }
 
-export type BigResponseData = BigWigData[] | BigBedData[] | BigZoomData[];
+export type BigResponseData = BigWigData[] | BigBedData[] | BigZoomData[] | PreRenderedBigWigData[];
 
 export interface BigWigData {
     chr: string;
@@ -33,6 +33,12 @@ export interface BigBedData {
     cdEnd?: number;
     color?: string;
     exons?: Array<BigBedExon>;
+}
+
+export interface PreRenderedBigWigData {
+    x: number;
+    min: number;
+    max: number;
 }
 
 export interface BigZoomData {

@@ -5,4 +5,4 @@ import { trackHubSchema } from "./trackhubSchema";
 // import { mergeSchemas } from 'graphql-tools';
 // export const schema = mergeSchemas({schemas: [bigWigSchema]});
 import { mergeSchemas } from "graphql-tools";
-export const schema = mergeSchemas({ schemas: [bigWigSchema, trackHubSchema] });
+export const schema: any = mergeSchemas({ schemas: [bigWigSchema, trackHubSchema] });

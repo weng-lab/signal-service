@@ -10,7 +10,7 @@ const apolloServer = new ApolloServer({
     playground: isPlaygroundActive
 });
 
-const app = express();
+const app: any = express();
 app.set("port", port);
 
 apolloServer.applyMiddleware({ app, cors: true });
