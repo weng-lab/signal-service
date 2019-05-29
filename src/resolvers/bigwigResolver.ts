@@ -38,18 +38,17 @@ function initialPreRenderedValues(xdomain: { start: number, end: number }): PreR
  * @param data the zoom data returned by the bigWig reader
  * @param request the request, containing coordinates and number of basepairs per pixel
  */
-async function condensedData(data: BigWigData[], preRenderedWidth: number): Promise<PreRenderedBigWigData[]> {
+async function condensedData(data: BigWigData[], preRenderedWidth: number, request?: BigRequest): Promise<PreRenderedBigWigData[]> {
 
-    let domain: { start: number, end: number } = getDomain(data);
+    let domain: { start: number, end: number } = request ? { start: request!.start, end: request!.end } : getDomain(data);
     let x: (i: number) => number = i => (i - domain.start) * preRenderedWidth / (domain.end - domain.start);
     
-    let cbounds: { start: number, end: number } = { start: Math.floor(x(data[0].start)), end: Math.floor(x(data[data.length - 1].end)) };
+    let cbounds: { start: number, end: number } = { start: Math.floor(x(domain.start)), end: Math.floor(x(domain.end)) };
     let retval = initialPreRenderedValues(cbounds);
-
     
     data.forEach( (point: BigWigData): void => {
-	let cxs: number = Math.floor(x(point.start));
-	let cxe: number = Math.floor(x(point.end));
+	let cxs: number = Math.floor(x(point.start < domain.start ? domain.start : point.start));
+	let cxe: number = Math.floor(x(point.end > domain.end ? domain.end : point.end));
 	if (point.value < retval[cxs].min)
 	    retval[cxs].min = point.value;
 	if (point.value > retval[cxs].max)
@@ -69,17 +68,17 @@ async function condensedData(data: BigWigData[], preRenderedWidth: number): Prom
  * @param data the zoom data returned by the bigWig reader
  * @param request the request, containing coordinates and number of basepairs per pixel
  */
-async function condensedZoomData(data: BigZoomData[], preRenderedWidth: number): Promise<PreRenderedBigWigData[]> {
+async function condensedZoomData(data: BigZoomData[], preRenderedWidth: number, request?: BigRequest): Promise<PreRenderedBigWigData[]> {
 
-    let domain: { start: number, end: number } = getDomain(data);
+    let domain: { start: number, end: number } = request ? { start: request!.start, end: request!.end } : getDomain(data);
     let x: (i: number) => number = i => (i - domain.start) * preRenderedWidth / (domain.end - domain.start);
     
-    let cbounds: { start: number, end: number } = { start: Math.floor(x(data[0].start)), end: Math.floor(x(data[data.length - 1].end)) };
+    let cbounds: { start: number, end: number } = { start: Math.floor(x(domain.start)), end: Math.floor(x(domain.end)) };
     let retval = initialPreRenderedValues(cbounds);
 
     data.forEach( (point: BigZoomData): void => {
-	let cxs: number = Math.floor(x(point.start));
-	let cxe: number = Math.floor(x(point.end));
+	let cxs: number = Math.floor(x(point.start < domain.start ? domain.start : point.start));
+	let cxe: number = Math.floor(x(point.end > domain.end ? domain.end : point.end));
 	if (point.minVal < retval[cxs].min)
 	    retval[cxs].min = point.minVal;
 	if (point.maxVal > retval[cxs].max)
@@ -112,14 +111,14 @@ async function bigRequest(request: BigRequest): Promise<BigResponse> {
 		return reader.readZoomData(request.chr1, request.start, request.chr2 || request.chr1, request.end, zoomLevelIndex);
 	    }
 	    
-            return condensedZoomData(await reader.readZoomData(request.chr1, request.start, request.chr1, request.end, zoomLevelIndex), request.preRenderedWidth!);
+            return condensedZoomData(await reader.readZoomData(request.chr1, request.start, request.chr1, request.end, zoomLevelIndex), request.preRenderedWidth!, request);
 	    
         };
     } else if (FileType.BigWig === header.fileType) {
         read = async () => {
             let data = reader.readBigWigData(request.chr1, request.start, request.chr2 || request.chr1, request.end);
 	    if (!request.preRenderedWidth) return data;
-	    return condensedData(await data, request.preRenderedWidth!);
+	    return condensedData(await data, request.preRenderedWidth!, request);
         };
     } else {
         read = () => {

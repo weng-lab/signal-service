@@ -107,14 +107,17 @@ describe("bigRequests queries", () => {
 	expect(response.body.data.bigRequests[2].data[0]).toEqual({
 	    x: 0, max: 1298, min: 1
 	});
-	expect(response.body.data.bigRequests[2].data[945]).toEqual({
-	    x: 945, max: 1699, min: 1
+	expect(response.body.data.bigRequests[2].data[10]).toEqual({
+	    x: 10, max: 1699, min: 1
+	});
+	expect(response.body.data.bigRequests[2].data[1]).toEqual({
+	    x: 1, max: null, min: null
 	});
 	expect(response.body.data.bigRequests[3].data[0]).toEqual({
-	    x: 0, max: 885, min: 885
+	    x: 0, max: 1298, min: 359
 	});
 	expect(response.body.data.bigRequests[3].data[8]).toEqual({
-	    x: 8, max: 1298, min: 359
+	    x: 8, max: null, min: null
 	});
     });
 
