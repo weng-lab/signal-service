@@ -5,6 +5,7 @@ import app from "../src/app";
 const baseUrl = "http://localhost:8001/";
 const testBWUrl = `${baseUrl}testbw.bigwig`;
 const testBBUrl = `${baseUrl}testbb.bigbed`;
+const test2BitUrl = `${baseUrl}test.2bit`;
 const testLargeBWUrl = `${baseUrl}ENCFF686NUN.bigWig`;
 
 const query = `
@@ -58,6 +59,25 @@ describe("bigRequests queries", () => {
         const response: Response = await request(app).post("/graphql").send({ query, variables });
         expect(response.status).toBe(200);
         expect(response.body.data.bigRequests[0].data.length).toBe(5074);
+    });
+
+    test("should handle one 2bit request", async () => {
+        const variables = {
+            "bigRequests": [
+		{ url: test2BitUrl, chr1: "seq1", start: 1, end: 10 },
+		{ url: test2BitUrl, chr1: "seq1", start: 1, end: 100 },
+		{ url: test2BitUrl, chr1: "seq2", start: 1, end: 100 }
+	    ]
+        };
+        const response: Response = await request(app).post("/graphql").send({ query, variables });
+        expect(response.status).toBe(200);
+        expect(response.body.data.bigRequests[0].data).toEqual([ "CTGATGCTA" ]);
+	expect(response.body.data.bigRequests[1].data).toEqual(
+	    [ 'CTGATGCTAGCTGATCGATGTGCATGTGCTGATGCTGATGTCANNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNCTATGCTGCGGGAGGG' ]
+	);
+	expect(response.body.data.bigRequests[2].data).toEqual(
+	    [ 'ctgtgatcgatcgtagtcgtGTGACTGATCGTAGGCGTCGATGCGACGGCTAGTCGTAGCTGACTGATGCTGACTGgctgctgatcgatgctgatacgt' ]
+	);
     });
     
     test("should handle zoom data requests", async () => {

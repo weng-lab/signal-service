@@ -13,7 +13,7 @@ export interface BigResponse {
     error?: string;
 }
 
-export type BigResponseData = BigWigData[] | BigBedData[] | BigZoomData[] | PreRenderedBigWigData[];
+export type BigResponseData = BigWigData[] | BigBedData[] | BigZoomData[] | PreRenderedBigWigData[] | string[];
 
 export interface BigWigData {
     chr: string;
