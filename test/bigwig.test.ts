@@ -71,12 +71,12 @@ describe("bigRequests queries", () => {
         };
         const response: Response = await request(app).post("/graphql").send({ query, variables });
         expect(response.status).toBe(200);
-        expect(response.body.data.bigRequests[0].data).toEqual([ "CTGATGCTA" ]);
+        expect(response.body.data.bigRequests[0].data).toEqual([ "ACTGATGCTA" ]);
 	expect(response.body.data.bigRequests[1].data).toEqual(
-	    [ 'CTGATGCTAGCTGATCGATGTGCATGTGCTGATGCTGATGTCANNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNCTATGCTGCGGGAGGG' ]
+	    [ 'ACTGATGCTAGCTGATCGATGTGCATGTGCTGATGCTGATGTCANNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNCTATGCTGCGGGAGGG' ]
 	);
 	expect(response.body.data.bigRequests[2].data).toEqual(
-	    [ 'ctgtgatcgatcgtagtcgtGTGACTGATCGTAGGCGTCGATGCGACGGCTAGTCGTAGCTGACTGATGCTGACTGgctgctgatcgatgctgatacgt' ]
+	    [ 'actgtgatcgatcgtagtcgtGTGACTGATCGTAGGCGTCGATGCGACGGCTAGTCGTAGCTGACTGATGCTGACTGgctgctgatcgatgctgatacgt' ]
 	);
     });
     
