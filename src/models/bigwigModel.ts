@@ -8,9 +8,14 @@ export interface BigRequest {
     preRenderedWidth?: number;
 }
 
+export interface BigError {
+    errortype: string;
+    message: string;
+}
+
 export interface BigResponse {
     data?: BigResponseData;
-    error?: string;
+    error?: BigError;
 }
 
 export type BigResponseData = BigWigData[] | BigBedData[] | BigZoomData[] | PreRenderedBigWigData[];

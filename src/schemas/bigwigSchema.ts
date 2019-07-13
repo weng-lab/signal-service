@@ -25,7 +25,12 @@ export const typeDefs: any = gql`
 
     type BigResponse {
         data: [BigResponseData]
-        error: String
+        error: BigError
+    }
+
+    type BigError {
+        errortype: String,
+        message: String
     }
 
     scalar BigResponseData

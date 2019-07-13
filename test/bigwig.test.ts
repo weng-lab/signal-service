@@ -11,7 +11,10 @@ const query = `
     query BigRequests($bigRequests: [BigRequest!]!) {
         bigRequests(requests: $bigRequests) {
             data,
-            error
+            error {
+                errortype,
+                message
+            }
         }
     }
 `;
@@ -19,7 +22,7 @@ const query = `
 describe("bigRequests queries", () => {
     test("should handle one bigwig request", async () => {
         const variables = {
-            "bigRequests": [{ url: testBWUrl, chr1: "chr14", start: 19_485_000, end: 20_000_100 }]
+            "bigRequests": [{ url: testBWUrl, chr1: "chr114", start: 19_485_000, end: 20_000_100 }]
         };
         const response: Response = await request(app).post("/graphql").send({ query, variables });
         expect(response.status).toBe(200);

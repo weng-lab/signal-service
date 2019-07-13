@@ -163,7 +163,10 @@ async function readRequest(read: () => Promise<BigResponseData>): Promise<BigRes
     try {
         response.data = await read();
     } catch (e) {
-        response.error = e.message;
+        response.error = {
+	    errortype: e.errortype,
+	    message: e.message
+	};
     }
     return response;
 }

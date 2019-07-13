@@ -8,7 +8,10 @@ The following is a complete example graphql query for batching big file requests
 query BigRequests($bigRequests: [BigRequest!]!) {
     bigRequests(requests: $bigRequests) {
         data,
-        error
+        error {
+	    errortype,
+	    message
+	}
     }
 }
 ```
