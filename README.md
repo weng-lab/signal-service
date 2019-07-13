@@ -1,9 +1,10 @@
 # Signal Service
 A graphql service that does the following:
 * Reads data from BigWig and BigBed files in batches.
+* Reads signal data from 2-bit files.
 
 ## API
-The following is a complete example graphql query for batching big file requests
+The following is a complete example graphql query for batching big file and 2-bit file requests:
 ```graphql
 query BigRequests($bigRequests: [BigRequest!]!) {
     bigRequests(requests: $bigRequests) {
@@ -15,6 +16,8 @@ query BigRequests($bigRequests: [BigRequest!]!) {
     }
 }
 ```
+where the data field contains a vector of signal data, a vector of peaks, or a single-element vector with a string of sequence data.
+
 Variables will look like this:
 ```json
 {
@@ -22,12 +25,13 @@ Variables will look like this:
         { "url": "http://localhost/sample.bigwig", "chr1": "chr14", "start": 19485000, "end": 20000100 },
         { "url": "http://localhost/sample.bigwig", "chr1": "chr2", "start": 0, "chr2": "chr6", "end": 1000, "zoomLevel": 100 },
         { "url": "http://localhost/sample.bigwig", "chr1": "chr2", "start": 0, "end": 1000000, "zoomLevel": 1000, "onePerPixel": true },
-        { "url": "http://localhost/sample.bigbed", "chr1": "chr21", "start": 10000000, "chr2": "chr21", "end": 20000000 }
+        { "url": "http://localhost/sample.bigbed", "chr1": "chr21", "start": 10000000, "chr2": "chr21", "end": 20000000 },
+	{ "url": "http://localhost/sample.2bit", "chr1": "chr22", "start": 1000000, "end": 1001000 }
     ]
 };
 ```
 
-## For contributers
+## For contributors
 
 ### Building
 * Run `yarn install` to install dependencies.

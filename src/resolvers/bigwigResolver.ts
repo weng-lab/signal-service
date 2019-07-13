@@ -103,7 +103,11 @@ async function bigRequest(request: BigRequest): Promise<BigResponse> {
     const header: HeaderData = await reader.getHeader();
     const zoomLevelIndex = getClosestZoomLevelIndex(request.zoomLevel, header.zoomLevelHeaders);
     let read: () => Promise<BigResponseData>;
-    if (undefined != zoomLevelIndex) {
+    if (FileType.TwoBit === header.fileType) {
+	read = async () => {
+	    return [ await reader.readTwoBitData(request.chr1, request.start, request.end) ];
+	};
+    } else if (undefined != zoomLevelIndex) {
         read = async () => {
 
 	    /* can't condense across chromosomes; bigBed will require separate algorithm */

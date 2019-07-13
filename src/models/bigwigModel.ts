@@ -18,7 +18,7 @@ export interface BigResponse {
     error?: BigError;
 }
 
-export type BigResponseData = BigWigData[] | BigBedData[] | BigZoomData[] | PreRenderedBigWigData[];
+export type BigResponseData = BigWigData[] | BigBedData[] | BigZoomData[] | PreRenderedBigWigData[] | string[];
 
 export interface BigWigData {
     chr: string;
