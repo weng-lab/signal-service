@@ -1,5 +1,5 @@
 import { GraphQLScalarType } from "graphql";
-import { AxiosDataLoader, BigWigReader, HeaderData, FileType, ZoomLevelHeader } from "bigwig-reader";
+import { AxiosDataLoader, GoogleBucketDataLoader, BigWigReader, HeaderData, FileType, ZoomLevelHeader } from "bigwig-reader";
 import { BigResponse, BigResponseData, BigRequest, BigZoomData, PreRenderedBigWigData, BigWigData } from "../models/bigwigModel";
 
 /**
@@ -98,7 +98,13 @@ async function condensedZoomData(data: BigZoomData[], preRenderedWidth: number, 
  * @param request the BigRequest to handle.
  */
 async function bigRequest(request: BigRequest): Promise<BigResponse> {
-    const loader = new AxiosDataLoader(request.url);
+    const loader = request.url.startsWith("gs://") ? (
+	new GoogleBucketDataLoader(
+	    request.url.split("gs://")[1].split('/')[0],
+	    request.url.split("gs://")[1].split('/').slice(1).join('/'),
+	    request.googleProject
+	)
+    ) : new AxiosDataLoader(request.url);
     const reader = new BigWigReader(loader);
     const header: HeaderData = await reader.getHeader();
     const zoomLevelIndex = getClosestZoomLevelIndex(request.zoomLevel, header.zoomLevelHeaders);
