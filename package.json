@@ -1,6 +1,6 @@
 {
   "name": "signal-service",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "Service that handles retrieving signal and peak data from BigWig and BigBed files",
   "scripts": {
     "build": "tsc",
@@ -13,7 +13,7 @@
   "dependencies": {
     "@types/graphql": "^14.2.0",
     "apollo-server-express": "^2.0.6",
-    "bigwig-reader": "^1.0.23",
+    "bigwig-reader": "^1.1.1",
     "express": "^4.16.3",
     "graphql": "^14.0.0"
   },

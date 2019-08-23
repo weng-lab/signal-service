@@ -30,15 +30,15 @@ describe("bigRequests queries", () => {
         expect(response.body.data.bigRequests[0].data.length).toBe(83);
         expect(response.body.data.bigRequests[0].error).toBeNull();
         expect(response.body.data.bigRequests[0].data[0]).toEqual({
-            chr: "chr14", 
-            start: 19_485_969, 
-            end: 19_485_974, 
+            chr: "chr14",
+            start: 19_485_969,
+            end: 19_485_974,
             value: 1
         });
         expect(response.body.data.bigRequests[0].data[10]).toEqual({
-            chr: "chr14", 
-            start: 19_486_029, 
-            end: 19_486_030, 
+            chr: "chr14",
+            start: 19_486_029,
+            end: 19_486_030,
             value: 1959
         });
     });
@@ -67,81 +67,81 @@ describe("bigRequests queries", () => {
     test("should handle one 2bit request", async () => {
         const variables = {
             "bigRequests": [
-		{ url: test2BitUrl, chr1: "seq1", start: 1, end: 10 },
-		{ url: test2BitUrl, chr1: "seq1", start: 1, end: 100 },
-		{ url: test2BitUrl, chr1: "seq2", start: 1, end: 100 }
-	    ]
+                { url: test2BitUrl, chr1: "seq1", start: 1, end: 10 },
+                { url: test2BitUrl, chr1: "seq1", start: 1, end: 100 },
+                { url: test2BitUrl, chr1: "seq2", start: 1, end: 100 }
+            ]
         };
         const response: Response = await request(app).post("/graphql").send({ query, variables });
         expect(response.status).toBe(200);
-        expect(response.body.data.bigRequests[0].data).toEqual([ "ACTGATGCTA" ]);
-	expect(response.body.data.bigRequests[1].data).toEqual(
-	    [ 'ACTGATGCTAGCTGATCGATGTGCATGTGCTGATGCTGATGTCANNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNCTATGCTGCGGGAGGG' ]
-	);
-	expect(response.body.data.bigRequests[2].data).toEqual(
-	    [ 'actgtgatcgatcgtagtcgtGTGACTGATCGTAGGCGTCGATGCGACGGCTAGTCGTAGCTGACTGATGCTGACTGgctgctgatcgatgctgatacgt' ]
-	);
+        expect(response.body.data.bigRequests[0].data).toEqual(["ACTGATGCTA"]);
+        expect(response.body.data.bigRequests[1].data).toEqual(
+            ['ACTGATGCTAGCTGATCGATGTGCATGTGCTGATGCTGATGTCANNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNCTATGCTGCGGGAGGG']
+        );
+        expect(response.body.data.bigRequests[2].data).toEqual(
+            ['actgtgatcgatcgtagtcgtGTGACTGATCGTAGGCGTCGATGCGACGGCTAGTCGTAGCTGACTGATGCTGACTGgctgctgatcgatgctgatacgt']
+        );
     });
-    
+
     test("should handle zoom data requests", async () => {
         const variables = {
             "bigRequests": [
-		{ url: testBWUrl, chr1: "chr2", start: 0, chr2: "chr6", end: 1000, zoomLevel: 100 },
-		{ url: testBWUrl, chr1: "chr2", start: 29_432_633, end: 30_432_633, zoomLevel: 1000 },
-		{ url: testBWUrl, chr1: "chr2", start: 29_432_633, end: 30_432_633, zoomLevel: 10_000, preRenderedWidth: 1000 },
-		{ url: testBWUrl, chr1: "chr2", start: 29_432_633, end: 29_532_633, preRenderedWidth: 1000 }
-	    ],
+                { url: testBWUrl, chr1: "chr2", start: 0, chr2: "chr6", end: 1000, zoomLevel: 100 },
+                { url: testBWUrl, chr1: "chr2", start: 29_432_633, end: 30_432_633, zoomLevel: 1000 },
+                { url: testBWUrl, chr1: "chr2", start: 29_432_633, end: 30_432_633, zoomLevel: 10_000, preRenderedWidth: 1000 },
+                { url: testBWUrl, chr1: "chr2", start: 29_432_633, end: 29_532_633, preRenderedWidth: 1000 }
+            ],
         };
         const response: Response = await request(app).post("/graphql").send({ query, variables });
         expect(response.status).toBe(200);
         expect(response.body.data.bigRequests[0].data.length).toBe(66);
-        expect(response.body.data.bigRequests[0].data[0]).toEqual({ 
-            chr: "chr2", 
-            start: 29_432_593, 
-            end: 29_432_633, 
-            validCount: 40, 
+        expect(response.body.data.bigRequests[0].data[0]).toEqual({
+            chr: "chr2",
+            start: 29_432_593,
+            end: 29_432_633,
+            validCount: 40,
             sumData: 28_328,
             sumSquares: 25_059_680,
             minVal: 1,
             maxVal: 885
         });
-        expect(response.body.data.bigRequests[0].data[28]).toEqual({ 
-            chr: "chr3", 
-            start: 178_916_553, 
-            end: 178_916_593, 
+        expect(response.body.data.bigRequests[0].data[28]).toEqual({
+            chr: "chr3",
+            start: 178_916_553,
+            end: 178_916_593,
             validCount: 40,
             sumData: 23_544,
             sumSquares: 17_853_998,
             minVal: 2,
             maxVal: 759
         });
-	expect(response.body.data.bigRequests[1].data.length).toBe(3);
-	expect(response.body.data.bigRequests[1].data[0]).toEqual({
-	    chr: "chr2",
-	    end: 29_432_793,
-	    maxVal: 1298,
-	    minVal: 1,
-	    start: 29_432_593,
-	    sumData: 154_443,
-	    sumSquares: 145_046_320,
-	    validCount: 188
-	});
-	expect(response.body.data.bigRequests[2].data.length).toBe(1001);
-	expect(response.body.data.bigRequests[2].data[0]).toEqual({
-	    x: 0, max: 1298, min: 1
-	});
-	expect(response.body.data.bigRequests[2].data[10]).toEqual({
-	    x: 10, max: 1699, min: 1
-	});
-	expect(response.body.data.bigRequests[2].data[1]).toEqual({
-	    x: 1, max: null, min: null
-	});
-	expect(response.body.data.bigRequests[3].data[0]).toEqual({
-	    x: 0, max: 1298, min: 359
-	});
-	expect(response.body.data.bigRequests[3].data[8]).toEqual({
-	    x: 8, max: null, min: null
-	});
+        expect(response.body.data.bigRequests[1].data.length).toBe(3);
+        expect(response.body.data.bigRequests[1].data[0]).toEqual({
+            chr: "chr2",
+            end: 29_432_793,
+            maxVal: 1298,
+            minVal: 1,
+            start: 29_432_593,
+            sumData: 154_443,
+            sumSquares: 145_046_320,
+            validCount: 188
+        });
+        expect(response.body.data.bigRequests[2].data.length).toBe(1001);
+        expect(response.body.data.bigRequests[2].data[0]).toEqual({
+            x: 0, max: 1298, min: 1
+        });
+        expect(response.body.data.bigRequests[2].data[10]).toEqual({
+            x: 10, max: 1699, min: 1
+        });
+        expect(response.body.data.bigRequests[2].data[1]).toEqual({
+            x: 1, max: null, min: null
+        });
+        expect(response.body.data.bigRequests[3].data[0]).toEqual({
+            x: 0, max: 1298, min: 359
+        });
+        expect(response.body.data.bigRequests[3].data[8]).toEqual({
+            x: 8, max: null, min: null
+        });
     });
 
     test("should handle one bigbed request", async () => {

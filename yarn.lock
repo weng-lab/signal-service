@@ -893,14 +893,14 @@ bignumber.js@^7.0.0:
   resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-7.2.1.tgz#80c048759d826800807c4bfd521e50edbba57a5f"
   integrity sha512-S4XzBk5sMB+Rcb/LNcpzXr57VRTxgAvaAEDAl1AwRx27j00hT84O6OkteE7u8UB3NuaaygCRrEpqox4uDOrbdQ==
 
-bigwig-reader@^1.0.23:
-  version "1.0.23"
-  resolved "https://registry.yarnpkg.com/bigwig-reader/-/bigwig-reader-1.0.23.tgz#51a9d6224b472ecd5a603be0ab1feb7a63262700"
-  integrity sha512-Jdgy9aQ5GPA8xGDFaiAWaO8iaTR9o0Czrr7nhYA1SonBfOOUAlHAaZObUYtsxlC0W2Oc9JDjtSqpc1EV9Pm50w==
+bigwig-reader@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/bigwig-reader/-/bigwig-reader-1.1.1.tgz#486ab6e96abfaa8da7dbac80e2bc7b6731a4ab36"
+  integrity sha512-mO888S0veo2AFnfm7GwE3EGBLypE2FRTa4xBg6aBrPd4E9JfJFQBlwLO3eD3L2IJUEGq02/FxqdOtlMixMWCFA==
   dependencies:
     "@google-cloud/storage" "^3.0.3"
     axios "^0.18.0"
-    pako "^1.0.6"
+    pako "^1.0.10"
 
 body-parser@1.19.0, body-parser@^1.18.3:
   version "1.19.0"
@@ -3725,7 +3725,7 @@ p-try@^2.0.0:
   resolved "https://registry.yarnpkg.com/p-try/-/p-try-2.2.0.tgz#cb2868540e313d61de58fafbe35ce9004d5540e6"
   integrity sha512-R4nPAVTAU0B9D35/Gk3uJf/7XYbQcyohSKdvAxIRSNghFl4e71hVoGnBNQz9cWaXxO2I10KTC+3jMdvvoKw6dQ==
 
-pako@^1.0.6:
+pako@^1.0.10:
   version "1.0.10"
   resolved "https://registry.yarnpkg.com/pako/-/pako-1.0.10.tgz#4328badb5086a426aa90f541977d4955da5c9732"
   integrity sha512-0DTvPVU3ed8+HNXOu5Bs+o//Mbdj9VNQMUOe9oKCwh8l0GNwpTDMKCWbRjgtD291AWnkAgkqA/LOnQS8AmS1tw==

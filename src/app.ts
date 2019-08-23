@@ -1,6 +1,6 @@
 import { ApolloServer, gql } from "apollo-server-express";
 import express, { Request, Response } from "express";
-import { schema } from "./schemas";
+import { schema } from "./schema";
 
 const port = process.env.PORT || 3000;
 const isPlaygroundActive = process.env.NODE_ENV !== "production";

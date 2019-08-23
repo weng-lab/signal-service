@@ -1,23 +1,18 @@
+import { ResponseWithError, RequestError } from "./commonModel";
+
 export interface BigRequest {
     url: string;
+    googleProject?: string;
     chr1: string;
     start: number;
     chr2?: string;
     end: number;
     zoomLevel?: number;
     preRenderedWidth?: number;
-    googleProject?: string;
 }
 
-export interface BigError {
-    errortype: string;
-    message: string;
-}
 
-export interface BigResponse {
-    data?: BigResponseData;
-    error?: BigError;
-}
+export interface BigResponse extends ResponseWithError<BigResponseData> {}
 
 export type BigResponseData = BigWigData[] | BigBedData[] | BigZoomData[] | PreRenderedBigWigData[] | string[];
 
