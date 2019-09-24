@@ -3,7 +3,7 @@ import { DataLoader, GoogleBucketDataLoader, AxiosDataLoader } from "bigwig-read
 import { ResponseWithError } from "../models/commonModel";
 
 export function dataLoaderForArgs(url: string, googleProject?: string): DataLoader {
-    if (googleProject !== undefined && url.startsWith("gs://")) {
+    if (url.startsWith("gs://")) {
         const splitUrl = url.split("gs://")[1].split('/');
         return new GoogleBucketDataLoader(splitUrl[0], splitUrl.slice(1).join('/'), googleProject);
     }
