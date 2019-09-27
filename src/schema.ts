@@ -6,13 +6,13 @@ import { bamResolvers } from "./resolvers/bamResolver";
 export const typeDefs: any = gql`
     type Query {
         "Request BAM Parsed Index data for just one chromosome, and reference ID from BAM Header"
-        bamIndexRequests(requests: [BamIndexRequest!]!): [BamIndexResponse!]!
+        bamIndexRequests(requests: [BamIndexRequest!]!, googleProject: String): [BamIndexResponse!]!
         "Request BAM Alignment data using regions from BAM index"
-        bamRequests(requests: [BamRequest!]!): [BamResponse!]!
+        bamRequests(requests: [BamRequest!]!, googleProject: String): [BamResponse!]!
         "Request BigWig / BigBed data"
-        bigRequests(requests: [BigRequest!]!): [BigResponse!]!
+        bigRequests(requests: [BigRequest!]!, googleProject: String): [BigResponse!]!
         "Request Trackhub data"
-        trackHubRequests(trackhuburl: trackHubUrl!): trackHubResponse!
+        trackHubRequests(trackhuburl: trackHubUrl!, googleProject: String): trackHubResponse!
     }
     
     type RequestError {
@@ -78,8 +78,6 @@ export const typeDefs: any = gql`
     input BigRequest {
         "URL of the file to request data from"
         url: String!
-        "Google Cloud Project if using google storage url"
-        googleProject: String
         "Start chromosome"
         chr1: String!
         "Start base pair"

@@ -2,7 +2,6 @@ import { ResponseWithError, RequestError } from "./commonModel";
 
 export interface BigRequest {
     url: string;
-    googleProject?: string;
     chr1: string;
     start: number;
     chr2?: string;

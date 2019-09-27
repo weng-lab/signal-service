@@ -7,13 +7,22 @@ import {
     BigZoomData, PreRenderedBigWigData, BigWigData 
 } from "../models/bigwigModel";
 
+type BigRequests = { requests: Array<BigRequest>, googleProject: string };
+
 /**
  * Apollo server graphql resolver for batched bigwig / bigbed data requests.
  *
  * @param obj Unused. Needed by Apollo server resolver function signature.
  */
-async function bigRequests(obj: any, { requests }: { requests: Array<BigRequest> } | any): Promise<BigResponse[]> {
-    return Promise.all(requests.map((request: BigRequest) => bigRequest(request)));
+async function bigRequests(obj: any, { requests, googleProject }: BigRequests | any): Promise<BigResponse[]> {
+    const urls: Set<string> = new Set(requests.map( (request: BigRequest): string => request.url ));
+    const readers: { [url: string]: BigWigReader } = [...urls].reduce(
+        (map: { [url: string]: BigWigReader }, url: string): { [url: string]: BigWigReader } => ({
+            ...map,
+            [url]: new BigWigReader(dataLoaderForArgs(url, googleProject))
+        }), {}
+    );
+    return Promise.all(requests.map((request: BigRequest) => bigRequest(request, readers[request.url])));
 }
 
 function getDomain(values: { start: number, end: number }[]): { start: number, end: number } {
@@ -38,7 +47,7 @@ function initialPreRenderedValues(xdomain: { start: number, end: number }): PreR
 }
 
 /**
- * Creates a proimse for condensing zoomed bigWig data to return exactly one element per pixel.
+ * Creates a promise for condensing zoomed bigWig data to return exactly one element per pixel.
  *
  * @param data the zoom data returned by the bigWig reader
  * @param request the request, containing coordinates and number of basepairs per pixel
@@ -70,7 +79,7 @@ async function condensedData(data: BigWigData[], preRenderedWidth: number, reque
 }
 
 /**
- * Creates a proimse for condensing zoomed bigWig data to return exactly one element per pixel.
+ * Creates a promise for condensing zoomed bigWig data to return exactly one element per pixel.
  *
  * @param data the zoom data returned by the bigWig reader
  * @param request the request, containing coordinates and number of basepairs per pixel
@@ -105,38 +114,43 @@ async function condensedZoomData(data: BigZoomData[], preRenderedWidth: number, 
  *
  * @param request the BigRequest to handle.
  */
-async function bigRequest(request: BigRequest): Promise<BigResponse> {
-    const loader = dataLoaderForArgs(request.url, request.googleProject);
-    const reader = new BigWigReader(loader);
-    const header: HeaderData = await reader.getHeader();
+async function bigRequest(request: BigRequest, reader?: BigWigReader, googleProject?: string): Promise<BigResponse> {
+
+    // create reader if necessary
+    if (reader === undefined) {
+        const loader = dataLoaderForArgs(request.url, googleProject);
+        reader = new BigWigReader(loader);
+    }
+    const header = await reader!.getHeader();
+
     const zoomLevelIndex = getClosestZoomLevelIndex(request.zoomLevel, header.zoomLevelHeaders);
     let read: () => Promise<BigResponseData>;
     if (FileType.TwoBit === header.fileType) {
         read = async () => {
-            return [await reader.readTwoBitData(request.chr1, request.start, request.end)];
+            return [await reader!.readTwoBitData(request.chr1, request.start, request.end)];
         };
     } else if (undefined != zoomLevelIndex) {
         read = async () => {
 
             /* can't condense across chromosomes; bigBed will require separate algorithm */
-            if (!request.preRenderedWidth || FileType.BigWig !== header.fileType || 
+            if (!request.preRenderedWidth || FileType.BigWig !== header.fileType ||
                 (request.chr2 && request.chr2 !== request.chr1)) {
-                return reader.readZoomData(request.chr1, request.start, request.chr2 || 
+                return reader!.readZoomData(request.chr1, request.start, request.chr2 ||
                     request.chr1, request.end, zoomLevelIndex);
             }
 
-            return condensedZoomData(await reader.readZoomData(request.chr1, request.start, 
+            return condensedZoomData(await reader!.readZoomData(request.chr1, request.start,
                 request.chr1, request.end, zoomLevelIndex), request.preRenderedWidth!, request);
         };
     } else if (FileType.BigWig === header.fileType) {
         read = async () => {
-            let data = reader.readBigWigData(request.chr1, request.start, request.chr2 || request.chr1, request.end);
+            let data = reader!.readBigWigData(request.chr1, request.start, request.chr2 || request.chr1, request.end);
             if (!request.preRenderedWidth) return data;
             return condensedData(await data, request.preRenderedWidth!, request);
         };
     } else {
         read = () => {
-            return reader.readBigBedData(request.chr1, request.start, request.chr2 || request.chr1, request.end);
+            return reader!.readBigBedData(request.chr1, request.start, request.chr2 || request.chr1, request.end);
         };
     }
     return wrapRequest(read);
