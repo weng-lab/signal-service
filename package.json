@@ -1,6 +1,6 @@
 {
   "name": "signal-service",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Service that handles retrieving signal and peak data from BigWig and BigBed files",
   "scripts": {
     "build": "tsc",
