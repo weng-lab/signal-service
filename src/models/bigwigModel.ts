@@ -8,6 +8,7 @@ export interface BigRequest {
     end: number;
     zoomLevel?: number;
     preRenderedWidth?: number;
+    googleProject?: string;
 }
 
 
