@@ -4,7 +4,6 @@ import { ResponseWithError, RequestError } from "./commonModel";
 export interface BamIndexRequest {
     baiUrl: string;
     bamUrl: string;
-    googleProject?: string;
     chr: string;
 }
 
@@ -17,7 +16,6 @@ export interface BamIndexResponseData {
 
 export interface BamRequest {
     bamUrl: string;
-    googleProject?: string;
     refId: number;
     chr: string;
     start: number;

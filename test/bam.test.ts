@@ -8,6 +8,8 @@ const baseUrl = "http://localhost:8001/";
 const testBamUrl = `${baseUrl}test.bam`;
 const testBaiUrl = `${baseUrl}test.bam.bai`;
 
+jest.setTimeout(30000);
+
 const bamIndexQuery = `
     query BamIndexRequests($bamIndexRequests: [BamIndexRequest!]!) {
         bamIndexRequests(requests: $bamIndexRequests) {
