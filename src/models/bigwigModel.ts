@@ -14,7 +14,9 @@ export interface BigRequest {
 
 export interface BigResponse extends ResponseWithError<BigResponseData> {}
 
-export type BigResponseData = BigWigData[] | BigBedData[] | BigZoomData[] | PreRenderedBigWigData[] | string[];
+// The string[] version is used in deprecated graphql and will be removed
+export type BigResponseData = BigWigData[] | BigBedData[] | BigZoomData[] | PreRenderedBigWigData[] | string
+    | string[];
 
 export interface BigWigData {
     chr: string;

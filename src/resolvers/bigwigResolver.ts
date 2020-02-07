@@ -1,4 +1,4 @@
-import { passThroughScalar, dataLoaderForArgs, wrapRequest } from "./util";
+import { passThroughScalar, dataLoaderForArgs, wrapRequest } from "../util";
 import { 
     BigWigReader, HeaderData, FileType, ZoomLevelHeader 
 } from "bigwig-reader";
@@ -100,6 +100,10 @@ async function condensedZoomData(data: BigZoomData[], preRenderedWidth: number, 
     return retval;
 }
 
+async function readTwoBitData(request: BigRequest, reader: BigWigReader): Promise<string[]> {
+    return [await reader.readTwoBitData(request.chr1, request.start, request.end)];
+}
+
 /**
  * Creates a Promise for processing a single BigRequest.
  *
@@ -110,34 +114,28 @@ async function bigRequest(request: BigRequest): Promise<BigResponse> {
     const reader = new BigWigReader(loader);
     const header: HeaderData = await reader.getHeader();
     const zoomLevelIndex = getClosestZoomLevelIndex(request.zoomLevel, header.zoomLevelHeaders);
-    let read: () => Promise<BigResponseData>;
+    let read: Promise<BigResponseData>;
     if (FileType.TwoBit === header.fileType) {
-        read = async () => {
-            return [await reader.readTwoBitData(request.chr1, request.start, request.end)];
-        };
+        read = readTwoBitData(request, reader);
     } else if (undefined != zoomLevelIndex) {
-        read = async () => {
-
-            /* can't condense across chromosomes; bigBed will require separate algorithm */
-            if (!request.preRenderedWidth || FileType.BigWig !== header.fileType || 
-                (request.chr2 && request.chr2 !== request.chr1)) {
-                return reader.readZoomData(request.chr1, request.start, request.chr2 || 
-                    request.chr1, request.end, zoomLevelIndex);
-            }
-
-            return condensedZoomData(await reader.readZoomData(request.chr1, request.start, 
+        /* can't condense across chromosomes; bigBed will require separate algorithm */
+        if (!request.preRenderedWidth || FileType.BigWig !== header.fileType || 
+            (request.chr2 && request.chr2 !== request.chr1)) {
+            read = reader.readZoomData(request.chr1, request.start, request.chr2 || 
+                request.chr1, request.end, zoomLevelIndex);
+        } else {
+            read = condensedZoomData(await reader.readZoomData(request.chr1, request.start, 
                 request.chr1, request.end, zoomLevelIndex), request.preRenderedWidth!, request);
-        };
+        }
     } else if (FileType.BigWig === header.fileType) {
-        read = async () => {
-            let data = reader.readBigWigData(request.chr1, request.start, request.chr2 || request.chr1, request.end);
-            if (!request.preRenderedWidth) return data;
-            return condensedData(await data, request.preRenderedWidth!, request);
-        };
+        let data = reader.readBigWigData(request.chr1, request.start, request.chr2 || request.chr1, request.end);
+        if (!request.preRenderedWidth){
+            read = data;
+        } else {
+            read = condensedData(await data, request.preRenderedWidth!, request);
+        }
     } else {
-        read = () => {
-            return reader.readBigBedData(request.chr1, request.start, request.chr2 || request.chr1, request.end);
-        };
+        read = reader.readBigBedData(request.chr1, request.start, request.chr2 || request.chr1, request.end);
     }
     return wrapRequest(read);
 }
