@@ -753,10 +753,10 @@ bignumber.js@^7.0.0:
   version "7.2.1"
   resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-7.2.1.tgz#80c048759d826800807c4bfd521e50edbba57a5f"
 
-bigwig-reader@^1.2.2:
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/bigwig-reader/-/bigwig-reader-1.2.2.tgz#7554d2f9dc1a662a5b4130568610a8d5292aef43"
-  integrity sha512-1xUgCsvegDTAL6Kqs7x5nSWYZoMohiZIk4TcgVJIamxS3NtvAVuoOS6CFjq/uzMOizKprM8Bqc71USyVB81FPQ==
+bigwig-reader@1.2.4:
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/bigwig-reader/-/bigwig-reader-1.2.4.tgz#a24a1842e4448b5d581bf5fadc29a8df8ed2c5c8"
+  integrity sha512-ESGQFkVy9OgjCgWJKaJSSma81KYBUamt+jWbZsqtRu8a9xOeukLJS6PSxZHOrMAtiRmu14MC8zekojB8prnikw==
   dependencies:
     "@google-cloud/storage" "^3.0.3"
     axios "^0.18.0"

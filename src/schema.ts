@@ -1,14 +1,9 @@
 import { gql, makeExecutableSchema } from "apollo-server-express";
 import { trackHubResolvers } from "./resolvers/trackhubResolver";
 import { bigwigResolvers } from "./resolvers/bigwigResolver";
-import { bamResolvers } from "./resolvers/bamResolver";
 
 export const typeDefs: any = gql`
     type Query {
-        "Request BAM Parsed Index data for just one chromosome, and reference ID from BAM Header"
-        bamIndexRequests(requests: [BamIndexRequest!]!, googleProject: String): [BamIndexResponse!]!
-        "Request BAM Alignment data using regions from BAM index"
-        bamRequests(requests: [BamRequest!]!, googleProject: String): [BamResponse!]!
         "Request BigWig / BigBed data"
         bigRequests(requests: [BigRequest!]!, googleProject: String): [BigResponse!]!
         "Request Trackhub data"
@@ -19,61 +14,6 @@ export const typeDefs: any = gql`
         errortype: String,
         message: String
     }
-
-    input BamIndexRequest {
-        "URL of the BAM Index (BAI) File"
-        baiUrl: String!
-        "URL of the BAM File"
-        bamUrl: String!
-        "Chromosome to request parsed index data for"
-        chr: String!
-    }
-
-    type BamIndexResponse {
-        data: BamIndexData
-        error: RequestError
-    }
-
-    type BamIndexData {
-        refId: Int!
-        indexRefData: BamIndexRefData!
-    }
-
-    scalar BamIndexRefData
-
-    input BamRequest {
-        "URL of the BAM File"
-        bamUrl: String!
-        "Reference (Chromosome) ID used in BAM file"
-        refId: Int!
-        "Chrosome Name"
-        chr: String!
-        "Search Range Start"
-        start: Int!
-        "Search Range End"
-        end: Int!
-        "Bam File Regions where matching alignments may be"
-        chunks: [Chunk!]!
-    }
-
-    input Chunk {
-        start: VirtualOffset!,
-        end: VirtualOffset!
-    }
-
-    input VirtualOffset {
-        "Offset of the compressed data block"
-        blockPosition: Int!,
-        "Offset into the uncompressed data"
-        dataPosition: Int!
-    }
-
-    type BamResponse {
-        data: BamResponseData
-        error: RequestError
-    }
-
-    scalar BamResponseData
 
     input BigRequest {
         "URL of the file to request data from"
@@ -123,5 +63,5 @@ export const typeDefs: any = gql`
 
 export const schema: any = makeExecutableSchema({
     typeDefs,
-    resolvers: [bamResolvers, bigwigResolvers, trackHubResolvers]
+    resolvers: [bigwigResolvers, trackHubResolvers]
 });

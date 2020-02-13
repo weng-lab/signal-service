@@ -11,7 +11,6 @@ export interface BigRequest {
     googleProject?: string;
 }
 
-
 export interface BigResponse extends ResponseWithError<BigResponseData> {}
 
 // The string[] version is used in deprecated graphql and will be removed

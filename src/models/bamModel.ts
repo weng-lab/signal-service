@@ -1,13 +1,15 @@
 import { BamIndexRefData, Chunk, BamAlignment } from "bigwig-reader";
-import { ResponseWithError, RequestError } from "./commonModel";
+
+export interface BamHeaderRequest {
+    bamUrl: string;
+    googleProject?: string;
+}
 
 export interface BamIndexRequest {
     baiUrl: string;
-    bamUrl: string;
-    chr: string;
+    refId: number;
+    googleProject?: string;
 }
-
-export interface BamIndexResponse extends ResponseWithError<BamIndexResponseData> {}
 
 export interface BamIndexResponseData {
     refId: number;
@@ -21,6 +23,5 @@ export interface BamRequest {
     start: number;
     end: number;
     chunks: Chunk[];
+    googleProject?: string;
 }
-
-export interface BamResponse extends ResponseWithError<BamAlignment[]> {}
