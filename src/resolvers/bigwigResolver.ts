@@ -1,6 +1,6 @@
 import { passThroughScalar, dataLoaderForArgs, wrapRequest } from "../util";
 import { 
-    BigWigReader, HeaderData, FileType, ZoomLevelHeader 
+    BigWigReader, FileType, ZoomLevelHeader 
 } from "bigwig-reader";
 import { 
     BigResponse, BigResponseData, BigRequest, 
