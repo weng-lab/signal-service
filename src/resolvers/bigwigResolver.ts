@@ -179,10 +179,8 @@ function getClosestZoomLevelIndex(zoomLevel: number | undefined, zoomLevelHeader
     return zoomLevelIndex;
 }
 
-export const bigwigResolvers = {
-    Query: {
-        bigRequests
-    },
+export const bigQueries = { bigRequests };
+export const bigResolvers = {
     BigResponseData: passThroughScalar("BigResponseData",
         "Generic BigResponse object; may contain BigBed, BigWig, or BigZoom data")
 };

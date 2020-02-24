@@ -1,6 +1,6 @@
-import { gql, makeExecutableSchema } from "apollo-server-express";
-import { trackHubResolvers } from "./resolvers/trackhubResolver";
-import { bigwigResolvers } from "./resolvers/bigwigResolver";
+import { gql } from "apollo-server-express";
+import { buildFederatedSchema } from "@apollo/federation";
+import { resolvers } from "./resolvers";
 
 export const typeDefs: any = gql`
     type Query {
@@ -61,7 +61,4 @@ export const typeDefs: any = gql`
     }
 `;
 
-export const schema: any = makeExecutableSchema({
-    typeDefs,
-    resolvers: [bigwigResolvers, trackHubResolvers]
-});
+export const schema = buildFederatedSchema([{ typeDefs, resolvers }]);

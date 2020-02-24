@@ -88,10 +88,8 @@ async function trackHubRequests(obj: any, trackHubUrl: trackHubUrl | any): Promi
     }
 }
 
+export const trackHubQueries = { trackHubRequests };
 export const trackHubResolvers = {
-    Query: {
-        trackHubRequests
-    },
     trackHubResponse: {
         __resolveType: resolveTrackHubType
     }
