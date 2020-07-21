@@ -51,7 +51,13 @@ gcloud --quiet config set compute/zone $COMPUTE_ZONE
 gcloud --quiet container clusters get-credentials $K8S_CLUSTER_NAME
 
 # Deploy the configured service / Apply any changes to the configuration.
-kubectl apply -f k8s/${1}.yml
+# Deploy the configured service / Apply any changes to the configuration.
+sed -e "s/\${SERVICE_VERSION}/${TAG}/" \
+    k8s/${1}.yml | \
+    kubectl apply -f -
 
-# Update the image in the k8s service.
-kubectl set image deployment/${KUBE_DEPLOYMENT_NAME} ${KUBE_DEPLOYMENT_CONTAINER_NAME}=gcr.io/${GCR_PROJECT_ID}/${DOCKER_IMAGE_NAME}:${TAG}
+# Wait for deployment to finish rolling out
+kubectl rollout status deployment/signal-service-deployment
+
+# Update api gateway
+kubectl rollout restart deployment/genome-almanac-api-deployment

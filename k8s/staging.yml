@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: signal-service
-        image: gcr.io/devenv-215523/signal-service
+        image: gcr.io/devenv-215523/signal-service:${SERVICE_VERSION}
         ports:
         - containerPort: 3000
         readinessProbe:
