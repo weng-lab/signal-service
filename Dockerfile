@@ -1,4 +1,4 @@
-FROM node:10-alpine AS build
+FROM node:12-alpine AS build
 
 # Create app directory
 RUN mkdir -p /app
