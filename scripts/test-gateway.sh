@@ -2,7 +2,7 @@
 # Deploys test version of app and gateway to kubernetes, allowing us to ensure new app schema doesn't break gateway.
 # Takes 1 args.
 # arg1: environment, ie staging. This should match up with filename prefixes for lib/${arg1}.env.sh and k8s/${arg1}.yml.
-# Example usage: scripts/deploy-service.sh staging
+# Example usage: scripts/test-gateway.sh staging
 set -e
 
 # cd to project root directory
@@ -12,7 +12,7 @@ cd "$(dirname "$(dirname "$0")")"
 source scripts/lib/common.sh
 
 # Exit if two args not given
-if [[ -z "$2" ]]; then
+if [[ -z "$1" ]]; then
     echo "One argument required.";
     exit;
 fi
