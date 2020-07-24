@@ -46,7 +46,7 @@ gcloud --quiet container clusters get-credentials $K8S_CLUSTER_NAME
 sed -e "s/\${SERVICE_VERSION}/${SERVICE_TAG}/" \
     -e "s/\${DB_SCHEMA}/${2}/" \
     -e "s/ signal-service/ signal-service-test"/ \
-    k8s/service-${1}.yml | \
+    k8s/${1}.yml | \
     kubectl apply -f -
 
 # Wait for app test deployment to finish rolling out
