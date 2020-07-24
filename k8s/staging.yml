@@ -45,20 +45,23 @@ spec:
   selector:
     app: signal-service
 ---
+apiVersion: networking.gke.io/v1beta2
+kind: ManagedCertificate
+metadata:
+  name: api-staging-cert
+spec:
+  domains:
+    - api.staging.wenglab.org
+---
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: api-ingress
   annotations:
     kubernetes.io/ingress.global-static-ip-name: "staging-api-external-ip"
-    cert-manager.io/cluster-issuer: letsencrypt    
-    cert-manager.io/issue-temporary-certificate: "true"
-    acme.cert-manager.io/http01-edit-in-place: "true"
+    kubernetes.io/ingress.allow-http: "true"
+    networking.gke.io/managed-certificates: "api-staging-cert"
 spec:
   backend:
     serviceName: signal-service-service
     servicePort: 80
-  tls:
-  - secretName: api-tls
-    hosts:
-    - api.staging.wenglab.org
