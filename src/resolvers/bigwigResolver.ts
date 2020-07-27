@@ -1,4 +1,4 @@
-import { passThroughScalar, dataLoaderForArgs, wrapRequest } from "../util";
+import { passThroughScalar, dataLoaderForArgs, wrapRequest, wrapRequestWithInput } from "../util";
 import { 
     BigWigReader, FileType, ZoomLevelHeader 
 } from "bigwig-reader";
@@ -182,5 +182,26 @@ function getClosestZoomLevelIndex(zoomLevel: number | undefined, zoomLevelHeader
 export const bigQueries = { bigRequests };
 export const bigResolvers = {
     BigResponseData: passThroughScalar("BigResponseData",
-        "Generic BigResponse object; may contain BigBed, BigWig, or BigZoom data")
+        "Generic BigResponse object; may contain BigBed, BigWig, or BigZoom data"),
+    BigResponseWithRange: {
+            __resolveReference(reference: { chrom: string; start: number; end: number; url: string }) {
+                const readers: { [url: string]: BigWigReader } = [reference.url].reduce(
+                    (map: { [url: string]: BigWigReader }, url: string): { [url: string]: BigWigReader } => ({
+                        ...map,
+                        [url]: new BigWigReader(dataLoaderForArgs(url))
+                    }),
+                    {}
+                );
+                return wrapRequestWithInput(bigRequest(
+                    {
+                        url: reference.url,
+                        chr1: reference.chrom,
+                        start: reference.start,
+                        end: reference.end
+                    },
+                    readers[reference.url]
+                ), reference.chrom, reference.start,  reference.end, reference.url);
+            }
+        }
+       
 };

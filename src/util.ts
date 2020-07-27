@@ -1,6 +1,6 @@
 import { GraphQLScalarType } from "graphql";
 import { DataLoader, GoogleBucketDataLoader, AxiosDataLoader } from "bigwig-reader";
-import { ResponseWithError } from "./models/commonModel";
+import { ResponseWithError, ResponseWithInput } from "./models/commonModel";
 import { Readable } from "stream";
 import * as express from "express";
 
@@ -75,4 +75,10 @@ export class MultiplexedResponseStreamer {
         this.response.write(`${index}:DATA:${value}\n`);
     }
 
+}
+
+export async function wrapRequestWithInput<T>(read: Promise<T>, chrom: string, start: number, end: number, url: string): Promise<ResponseWithInput<T>> {
+    const response: ResponseWithInput<T> = { chrom,start,end,url};
+    response.data = await read;    
+    return response
 }

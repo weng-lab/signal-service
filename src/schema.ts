@@ -37,6 +37,19 @@ export const typeDefs: any = gql`
         error: RequestError
     }
 
+    type SingleBigResponse {
+        data: BigResponseData
+        error: RequestError
+    }
+
+    type BigResponseWithRange @key(fields: "chrom start end url") {
+        chrom: String!
+        start: Int! 
+        end: Int! 
+        url: String! 
+        data: SingleBigResponse    
+    }    
+
     scalar BigResponseData
 
     input trackHubUrl {
