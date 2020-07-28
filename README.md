@@ -7,13 +7,13 @@ A graphql service that does the following:
 
 ## BigWig / BigBed / 2bit
 ### Request
-For BigWig / BigBed /2bit data, use the `/big` GET endpoint
+For BigWig / BigBed /2bit data, use the `/big` POST endpoint
 
 The body of the request must be a json formatted list of "BigRequests"
 
 Each BigRequest contains a URL and a genomic region consisting of chr1, start, chr2 (optional), end. An optional zoomLevel field is also available to get zoomed data from BigWig and BigBed files.
 
-The following is a complete example query for batching big file and 2-bit file requests:
+The following is a complete example request body for batching big file and 2-bit file requests:
 
 Variables will look like this:
 ```json
@@ -78,14 +78,14 @@ BAMs work a little differently. Since BAM indexes are only useful if read in the
 ### BAM Header Request
 First, in order to get reference IDs needed in BAM Index and BAM Data requests, we need to make a BAM Header request. 
 
-Use a GET on `/bamHeader` with a JSON formatted body similar to `{ "bamUrl": "http://someUrl/test.bam" }`
+Use a POST on `/bamHeader` with a JSON formatted body similar to `{ "bamUrl": "http://someUrl/test.bam" }`
 
 The response will be a json object containing a map of chromosome names to reference ids called `chromToId`
 
 ### BAM Index Request
 Next, we will request the raw index data for a single chromosome (by referenceId).
 
-Use a GET on `/bamIndex` with a json formatted body similar to 
+Use a POST on `/bamIndex` with a json formatted body similar to 
 `{ "baiUrl": "http://someUrl/test.bai", "refId": 1 }`
 
 The response will be raw binary bai data. You can use the `bigwig-reader` library to parse it using 
@@ -94,7 +94,7 @@ the provided `parseRawIndexRefData` function.
 ### BAM Data Request
 Finally, we will request bam data for a genomic region.
 
-Use a GET on `/bam` with a JSON formatted body similar to the following
+Use a POST on `/bam` with a JSON formatted body similar to the following
 ```json
 {
     "bamUrl": "http://someUrl/test.bam", 
