@@ -1,56 +1,66 @@
 # Signal Service
 A graphql service that does the following:
+* Reads data from Trackhubs
 * Reads data from BigWig and BigBed files in batches.
 * Reads signal data from 2-bit files.
 * Reads BAM indexes and data
 
-## API
-The following is a complete example graphql query for batching big file and 2-bit file requests:
-```graphql
-query BigRequests($bigRequests: [BigRequest!]!) {
-    bigRequests(requests: $bigRequests) {
-        data,
-        error {
-    	    errortype,
-	        message
-	    }
-    }
-}
-```
-where the data field contains a vector of signal data, a vector of peaks, or a single-element vector with a string of sequence data.
+## BigWig / BigBed / 2bit
+### Request
+For BigWig / BigBed /2bit data, use the `/big` GET endpoint
+
+The body of the request must be a json formatted list of "BigRequests"
+
+Each BigRequest contains a URL and a genomic region consisting of chr1, start, chr2 (optional), end. An optional zoomLevel field is also available to get zoomed data from BigWig and BigBed files.
+
+The following is a complete example query for batching big file and 2-bit file requests:
 
 Variables will look like this:
 ```json
-{
-    "bigRequests": [
-        { "url": "http://localhost/sample.bigwig", "chr1": "chr14", "start": 19485000, "end": 20000100 },
-        { "url": "http://localhost/sample.bigwig", "chr1": "chr2", "start": 0, "chr2": "chr6", "end": 1000, "zoomLevel": 100 },
-        { "url": "http://localhost/sample.bigwig", "chr1": "chr2", "start": 0, "end": 1000000, "zoomLevel": 1000, "onePerPixel": true },
-        { "url": "http://localhost/sample.bigbed", "chr1": "chr21", "start": 10000000, "chr2": "chr21", "end": 20000000 },
-	    { "url": "http://localhost/sample.2bit", "chr1": "chr22", "start": 1000000, "end": 1001000 }
-    ]
-};
+[
+    { "url": "http://localhost/sample.bigwig", "chr1": "chr14", "start": 19485000, "end": 20000100 },
+    { "url": "http://localhost/sample.bigwig", "chr1": "chr2", "start": 0, "chr2": "chr6", "end": 1000, "zoomLevel": 100 },
+    { "url": "http://localhost/sample.bigwig", "chr1": "chr2", "start": 0, "end": 1000000, "zoomLevel": 1000 },
+    { "url": "http://localhost/sample.bigbed", "chr1": "chr21", "start": 10000000, "chr2": "chr21", "end": 20000000 },
+    { "url": "http://localhost/sample.2bit", "chr1": "chr22", "start": 1000000, "end": 1001000 }
+]
 ```
 
-### BAMs
-BAMs work a little differently. Since BAM indexes are only useful if read in their entirety, we have created a separate request for
-parsed bam index data (for a single chromosome). Then, using the bigwig-reader library, use the index to find a file block use when 
-requesting BAM data.
+### Response
+The response is streamed back and multiplexed. Chunks of data are added in the order they are received. As such, each chunk of data starts with the index of it's request. Similar signals are used for indicating the end for a stream or error for a single file.
 
-Here's an example of an index request
+- BigWig, BigBed, and Zoom data chunks will be in JSON format (See `src/models/bigwigModel.ts`). 
+- 2bit data chunks will be strings.
+
+```
+0:DATA:{"chr": "chr14", "start": 19_485_969, "end": 19_485_974, "value": 1}
+2:DATA:{...}
+1:DATA:AAAACTCAG...
+...
+1:END
+0:DATA:{...}
+0:END
+2:ERROR:Some error message
+```
+
+## Trackhubs
+Trackhub Requests use the `/graphql` endpoint
 
 ```graphql
-query BamIndexRequests($bamIndexRequests: [BamIndexRequest!]!) {
-    bamIndexRequests(requests: $bamIndexRequests) {
-        data {
-            refId,
-            indexRefData
-        },
-        error {
-            errortype,
-            message
+query trackHubRequests($url: trackHubUrl!) {
+    trackHubRequests(trackhuburl: $url)  {
+        trackhubname
+        ... on TrackHubGenomes {          
+            genomes{
+                trackDb
+                defaultPos
+                genome
+            }
+        }  
+        ... on TrackHub {
+            trackHubContent
         }
-    }
+   }
 }
 ```
 
@@ -58,35 +68,47 @@ and corresponding variables json
 
 ```json
 {
-    "bamIndexRequests": [{ "baiUrl": "http://localhost/sample.bam.bai", "bamUrl": "http://localhost/sample.bam", "chr": "chr22" }]
+    "url": { "trackHubUrl": "http://localhost:8001/hub.txt", "hubUrl": true }
 }
 ```
 
-To request bam data, the following query may be used
+## BAMs
+BAMs work a little differently. Since BAM indexes are only useful if read in their entirety, we have created a separate request for bam index data (for a single chromosome). Then, using the bigwig-reader library, use the index to find a file block use when requesting BAM data.
 
-```graphql
-query BamRequests($bamRequests: [BamRequest!]!) {
-    bamRequests(requests: $bamRequests) {
-        data,
-        error {
-            errortype,
-            message
-        }
-    }
+### BAM Header Request
+First, in order to get reference IDs needed in BAM Index and BAM Data requests, we need to make a BAM Header request. 
+
+Use a GET on `/bamHeader` with a JSON formatted body similar to `{ "bamUrl": "http://someUrl/test.bam" }`
+
+The response will be a json object containing a map of chromosome names to reference ids called `chromToId`
+
+### BAM Index Request
+Next, we will request the raw index data for a single chromosome (by referenceId).
+
+Use a GET on `/bamIndex` with a json formatted body similar to 
+`{ "baiUrl": "http://someUrl/test.bai", "refId": 1 }`
+
+The response will be raw binary bai data. You can use the `bigwig-reader` library to parse it using 
+the provided `parseRawIndexRefData` function.
+
+### BAM Data Request
+Finally, we will request bam data for a genomic region.
+
+Use a GET on `/bam` with a JSON formatted body similar to the following
+```json
+{
+    "bamUrl": "http://someUrl/test.bam", 
+    "refId": 1, 
+    "chr": "chr14", 
+    "start": 100000, 
+    "end": 100100,
+    "chunks": ...
 }
 ```
 
-and the corresponding variables with logic to put it together
+In the example above, `chunks` is a set of file locations we get from the index. You can use the `bigwig-reader` library's function `blocksForRange` to get these values.
 
-```typescript
-const baiResponse = ... //response from baiRequest
-const start = 10_000_000
-const end = 10_010_000
-const chunks = blocksForRange(baiResponse.indexRefData, baiResponse.refId, start, end); // function from bigwig-reader
-const variables = {
-    "bamRequests": [{ bamUrl: "http://localhost/sample.bam", refId: baiResponse.refId, chr: "chr22", start, end, chunks }]
-};
-```
+For a complete example of using the bam interface, see `test/bam.test.ts`
 
 ## For contributors
 
