@@ -1,5 +1,5 @@
 import * as express from "express";
-import { streamRawBamIndex, readBamHeaderData, readBam } from "bigwig-reader"
+import { streamRawBamIndex, readBamHeaderData, readBam } from "genomic-reader"
 import { BamHeaderRequest, BamIndexRequest, BamRequest } from "../models/bamModel";
 import { dataLoaderForArgs } from "../util";
 

@@ -1,4 +1,4 @@
-import { BamIndexRefData, Chunk, BamAlignment } from "bigwig-reader";
+import { BamIndexRefData, Chunk, BamAlignment } from "genomic-reader";
 
 export interface BamHeaderRequest {
     bamUrl: string;

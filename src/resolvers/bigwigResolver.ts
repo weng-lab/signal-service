@@ -1,7 +1,7 @@
 import { passThroughScalar, dataLoaderForArgs, wrapRequest, wrapRequestWithInput } from "../util";
 import { 
     BigWigReader, FileType, ZoomLevelHeader 
-} from "bigwig-reader";
+} from "genomic-reader";
 import { 
     BigResponse, BigResponseData, BigRequest, 
     BigZoomData, PreRenderedBigWigData, BigWigData 

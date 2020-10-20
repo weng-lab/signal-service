@@ -1,7 +1,7 @@
 import request from "supertest";
 import { Response } from "supertest";
 import app from "../src/app";
-import { parseRawIndexRefData, BamIndexRefData, BamHeader, blocksForRange, BamAlignment } from "bigwig-reader";
+import { parseRawIndexRefData, BamIndexRefData, BamHeader, blocksForRange, BamAlignment } from "genomic-reader";
 import { BamHeaderRequest, BamIndexRequest, BamRequest } from "../src/models/bamModel";
 
 const baseUrl = "http://localhost:8001/";

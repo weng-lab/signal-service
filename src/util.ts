@@ -1,5 +1,6 @@
 import { GraphQLScalarType } from "graphql";
-import { DataLoader, GoogleBucketDataLoader, AxiosDataLoader } from "bigwig-reader";
+import { DataLoader, AxiosDataLoader } from "genomic-reader";
+import { GoogleBucketDataLoader } from "bigwig-reader-gcp";
 import { ResponseWithError, ResponseWithInput } from "./models/commonModel";
 import { Readable } from "stream";
 import * as express from "express";

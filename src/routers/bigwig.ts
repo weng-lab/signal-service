@@ -1,7 +1,7 @@
 import * as express from "express";
 import { Readable } from "stream";
 import { BigRequest } from "../models/bigwigModel";
-import { FileType, HeaderData, BigWigReader, ZoomLevelHeader } from "bigwig-reader";
+import { FileType, HeaderData, BigWigReader, ZoomLevelHeader } from "genomic-reader";
 import { dataLoaderForArgs, MultiplexedResponseStreamer } from "../util";
 
 export async function bigHandler(req: express.Request, res: express.Response) {
