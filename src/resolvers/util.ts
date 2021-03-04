@@ -1,6 +1,7 @@
 import { GraphQLScalarType } from "graphql";
-import { DataLoader, GoogleBucketDataLoader, AxiosDataLoader } from "genomic-reader";
+import { DataLoader, AxiosDataLoader } from "genomic-reader";
 import { ResponseWithError } from "../models/commonModel";
+import { GoogleBucketDataLoader } from "bigwig-reader-gcp"
 
 export function dataLoaderForArgs(url: string, googleProject?: string): DataLoader {
     if (url.startsWith("gs://")) {
