@@ -56,11 +56,11 @@ describe("/big queries", () => {
         const bigRequests = [
             { url: test2BitUrl, chr1: "seq1", start: 1, end: 10 },
             { url: test2BitUrl, chr1: "seq1", start: 1, end: 100 },
-            { url: test2BitUrl, chr1: "seq2", start: 1, end: 100 }
+            { url: test2BitUrl, chr1: "seq2", start: 1, end: 100 },
+            { url: test2BitUrl, chr1: "seq1", start: 1, end: 2, oneHotEncodedFormat: true }
         ];
         const response: Response = await request(app).post("/big").send(bigRequests);
         expect(response.status).toBe(200);
-        
         const results = parseMultiplexedResponse(response.text);
         expect(results[0]).toEqual("ACTGATGCTA");
         expect(results[1]).toEqual(
@@ -68,6 +68,9 @@ describe("/big queries", () => {
         );
         expect(results[2]).toEqual(
             'actgtgatcgatcgtagtcgtGTGACTGATCGTAGGCGTCGATGCGACGGCTAGTCGTAGCTGACTGATGCTGACTGgctgctgatcgatgctgatacgt'
+        );
+        expect(results[3][0]).toEqual(
+            [[1,0,0,0],[0,1,0,0]]
         );
     });
 
@@ -213,7 +216,8 @@ describe("/graphql bigRequests queries", () => {
             "bigRequests": [
                 { url: test2BitUrl, chr1: "seq1", start: 1, end: 10 },
                 { url: test2BitUrl, chr1: "seq1", start: 1, end: 100 },
-                { url: test2BitUrl, chr1: "seq2", start: 1, end: 100 }
+                { url: test2BitUrl, chr1: "seq2", start: 1, end: 100 },
+                { url: test2BitUrl, chr1: "seq1", start: 1, end: 10, oneHotEncodedFormat: true }
             ]
         };
         const response: Response = await request(app).post("/graphql").send({ query, variables });
@@ -225,6 +229,7 @@ describe("/graphql bigRequests queries", () => {
         expect(response.body.data.bigRequests[2].data).toEqual(
             ['actgtgatcgatcgtagtcgtGTGACTGATCGTAGGCGTCGATGCGACGGCTAGTCGTAGCTGACTGATGCTGACTGgctgctgatcgatgctgatacgt']
         );
+        expect(response.body.data.bigRequests[3].data).toEqual(  [[1,0,0,0],[0,1,0,0],[0,0,0,1],[0,0,1,0],[1,0,0,0],[0,0,0,1],[0,0,1,0],[0,1,0,0],[0,0,0,1],[1,0,0,0]])
     });
 
     test("should handle zoom data requests", async () => {

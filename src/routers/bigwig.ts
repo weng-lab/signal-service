@@ -22,7 +22,7 @@ async function handleBigRequest(bigRequest: BigRequest, index: number, streamer:
     const zoomLevelIndex = getClosestZoomLevelIndex(bigRequest.zoomLevel, header.zoomLevelHeaders);
     let stream: Readable;
     if (FileType.TwoBit === header.fileType) {
-        stream = await reader.streamTwoBitData(bigRequest.chr1, bigRequest.start, bigRequest.end);
+        stream = await reader.streamTwoBitData(bigRequest.chr1, bigRequest.start, bigRequest.end, undefined, bigRequest.oneHotEncodedFormat);
     } else if (undefined != zoomLevelIndex) {
         stream = await reader.streamZoomData(bigRequest.chr1, bigRequest.start, bigRequest.chr2 || 
                 bigRequest.chr1, bigRequest.end, zoomLevelIndex);

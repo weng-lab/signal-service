@@ -30,6 +30,8 @@ export const typeDefs: any = gql`
         zoomLevel: Int
         "(Optional) If passed, pre-renders BigWig data to match the given number of bins to save download and rendering time on the frontend."
         preRenderedWidth: Int
+        "(Optional) If passed, returns twobit data in one hot encoded format"
+        oneHotEncodedFormat: Boolean
     }
 
     type BigResponse {

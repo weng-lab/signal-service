@@ -113,6 +113,10 @@ async function readTwoBitData(request: BigRequest, reader: BigWigReader): Promis
     return [await reader.readTwoBitData(request.chr1, request.start, request.end)];
 }
 
+async function readTwoBitDataMatrix(request: BigRequest, reader: BigWigReader): Promise<number[][]> {
+    return await reader.readTwoBitDataMatrix(request.chr1, request.start, request.end);
+}
+
 /**
  * Creates a Promise for processing a single BigRequest.
  *
@@ -130,7 +134,7 @@ async function bigRequest(request: BigRequest, reader?: BigWigReader, googleProj
     const zoomLevelIndex = getClosestZoomLevelIndex(request.zoomLevel, header.zoomLevelHeaders);
     let read: Promise<BigResponseData>;
     if (FileType.TwoBit === header.fileType) {
-        read = readTwoBitData(request, reader);
+        read =  request.oneHotEncodedFormat ? readTwoBitDataMatrix(request, reader) : readTwoBitData(request, reader);
     } else if (undefined != zoomLevelIndex) {
         /* can't condense across chromosomes; bigBed will require separate algorithm */
         if (!request.preRenderedWidth || FileType.BigWig !== header.fileType || 

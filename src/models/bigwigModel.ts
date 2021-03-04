@@ -9,13 +9,14 @@ export interface BigRequest {
     zoomLevel?: number;
     preRenderedWidth?: number;
     googleProject?: string;
+    oneHotEncodedFormat?: boolean;
 }
 
 export interface BigResponse extends ResponseWithError<BigResponseData> {}
 
 // The string[] version is used in deprecated graphql and will be removed
 export type BigResponseData = BigWigData[] | BigBedData[] | BigZoomData[] | PreRenderedBigWigData[] | string
-    | string[];
+    | string[] | number[][];
 
 export interface BigWigData {
     chr: string;

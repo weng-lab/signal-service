@@ -13,7 +13,7 @@
   "dependencies": {
     "@apollo/federation": "^0.12.1",
     "apollo-server-express": "^2.14.2",
-    "genomic-reader": "1.4.7",
+    "genomic-reader": "1.4.9",
     "express": "^4.16.3",
     "graphql": "^14.3.1",
     "bigwig-reader-gcp": "1.0.1"

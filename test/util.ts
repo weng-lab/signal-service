@@ -20,7 +20,9 @@ export function parseMultiplexedResponse(data: string): Array<any> {
     return compiledData.map((d) => {
         // For tests, this assumption is good enough
         const isJson = d[0].startsWith("[{");
-        if (!isJson) {
+        const isArray = d[0].startsWith("[[");        
+        
+        if (!isJson && !isArray) {
             return d.join("");
         }
 
