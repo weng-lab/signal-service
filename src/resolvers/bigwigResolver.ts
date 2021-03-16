@@ -9,6 +9,23 @@ import {
 
 type BigRequests = { requests: Array<BigRequest>, googleProject: string };
 
+/*
+Return two bit data for region and url from external service
+*/
+async function getTwoBitData(args: {url: string, start: number, chrom: string, end: number, googleProject?: string}): Promise<any> {
+    
+    const loader = dataLoaderForArgs(args.url, args.googleProject);
+    let reader = new BigWigReader(loader);
+    let read: Promise<BigResponseData> = readTwoBitDataMatrix({ url: args.url, chr1: args.chrom, start: args.start, end: args.end, oneHotEncodedFormat: true}, reader) 
+    return {
+            chrom: args.chrom,
+            start: args.start,
+            end: args.end,
+            url: args.url,
+            data: await read
+        }
+}
+
 /**
  * Apollo server graphql resolver for batched bigwig / bigbed data requests.
  *
@@ -187,6 +204,11 @@ export const bigQueries = { bigRequests };
 export const bigResolvers = {
     BigResponseData: passThroughScalar("BigResponseData",
         "Generic BigResponse object; may contain BigBed, BigWig, or BigZoom data"),
+    TwoBitData: {
+        async __resolveReference(reference: {chrom: string, start: number, end: number, url: string, googleProject?: string}) {
+            return getTwoBitData({ chrom: reference.chrom, start: reference.start, end: reference.end, url: reference.url, googleProject: reference.googleProject})
+        }
+    },    
     BigResponseWithRange: {
             __resolveReference(reference: { chrom: string; start: number; end: number; url: string }) {
                 const readers: { [url: string]: BigWigReader } = [reference.url].reduce(

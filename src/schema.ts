@@ -15,6 +15,14 @@ export const typeDefs: any = gql`
         message: String
     }
 
+    type TwoBitData @key(fields: "chrom start end url") {
+        chrom: String!
+        start: Int!
+        end: Int!
+        url: String!
+        data: [[Int]]
+    }
+
     input BigRequest {
         "URL of the file to request data from"
         url: String!
